@@ -1,0 +1,51 @@
+<section class="related-blogs-section">
+  <div class="container">
+    {% if section.settings.recommendations_title != blank %}
+    <div class="secton-title text-center">
+      <h2>{{ section.settings.recommendations_title }}</h2>
+    </div>
+    {% endif %}
+    <div class="blog-grid flex" id="scr-el">
+      {% assign currentHandle = article.handle %}
+      {% assign articlesFound = 0 %}
+      {% for addin in blogs[blog.handle].articles %}
+      {% unless addin.handle == currentHandle %}
+      <div class="blog-card">
+        <div class="blog-card-img">
+          <img srcset="{%- if addin.image.src.width >= 165 -%}{{ addin.image.src | img_url: '165x' }} 165w,{%- endif -%}
+                       {%- if addin.image.src.width >= 360 -%}{{ addin.image.src | img_url: '360x' }} 360w,{%- endif -%}
+                       {%- if addin.image.src.width >= 533 -%}{{ addin.image.src | img_url: '533x' }} 533w,{%- endif -%}
+                       {%- if addin.image.src.width >= 720 -%}{{ addin.image.src | img_url: '720x' }} 720w,{%- endif -%}
+                       {%- if addin.image.src.width >= 940 -%}{{ addin.image.src | img_url: '940x' }} 940w,{%- endif -%}
+                       {%- if addin.image.src.width >= 1066 -%}{{ addin.image.src | img_url: '1066x' }} 1066w{%- endif -%}"
+               src="{{ addin.image | img_url: '370x' }}" loading="lazy" alt="{{ addin.title }}"/>
+        </div>
+        <div class="blog-dec">
+          <div class="b-date">{{- addin.published_at | date: '%d %B' -}}</div>
+          <div class="blog-name">
+            <h3> {{ addin.title }} </h3>
+            <p>{{ addin.excerpt }}</p>
+          </div>
+          <a href="{{ addin.url }}" class="border-btn">{{ 'blogs.article.read_more' | t }}</a>
+        </div>
+      </div>        
+      {% assign articlesFound = articlesFound |plus: 1 %}
+      {% if articlesFound == 3 %}{% break %}{% endif %}
+      {% endunless %}
+      {% endfor %}
+    </div>
+    
+    <div class="mobile-scroller">
+      <div class="mobile-scroll-line">
+        <span class="scroll-thumb" id="myBar" style="width: 0%; background-color: var(--theme-color);"></span>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+    let scrEl = document.getElementById("scr-el")
+    scrEl.addEventListener('scroll', event => {
+      let scrolled = (scrEl.scrollLeft / (scrEl.scrollWidth - scrEl.clientWidth) ) * 100
+      document.getElementById("myBar").style.width = scrolled + "%"
+    });
+</script>

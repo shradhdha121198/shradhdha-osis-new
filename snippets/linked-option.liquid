@@ -1,0 +1,246 @@
+{% if from_qv == 1 %}
+<!-- This is for quickview -->
+
+<script>
+  // (c) Copyright 2016 Caroline Schnapp. All Rights Reserved. Contact: mllegeorgesand@gmail.com
+  // See https://docs.shopify.com/themes/customization/navigation/link-product-options-in-menus
+
+  var Shopify = Shopify || {};
+
+  Shopify.optionsMap = {};
+
+
+  Shopify.updateOptionsInSelector_{{ product.id }}__qv = function(selectorIndex) {
+    switch (selectorIndex) {
+      case 0:
+        var key = 'root';
+        var selector = jQuery('#p{{ product.id }}__qv .single-option-selector:eq(0)');
+        break;
+      case 1:
+        var key = jQuery('#p{{ product.id }}__qv .single-option-selector:eq(0)').val();
+        var selector = jQuery('#p{{ product.id }}__qv .single-option-selector:eq(1)');
+        break;
+      case 2:
+        var key = jQuery('#p{{ product.id }}__qv .single-option-selector:eq(0)').val();  
+        key += ' / ' + jQuery('#p{{ product.id }}__qv .single-option-selector:eq(1)').val();
+        var selector = jQuery('#p{{ product.id }}__qv .single-option-selector:eq(2)');
+    }
+
+    var initialValue = selector.val();
+    selector.empty();    
+    var availableOptions = Shopify.optionsMap[key];
+    for (var i=0; i<availableOptions.length; i++) {
+      var option = availableOptions[i];
+      var newOption = jQuery('<option></option>').val(option).html(option);
+      selector.append(newOption).addClass('ddddd');
+    }
+    jQuery('#p{{ product.id }}__qv .swatch[data-option-index="' + selectorIndex + '"] .swatch-element').each(function() {
+           if (jQuery.inArray($(this).attr('data-value'), availableOptions) !== -1) {
+      $(this).removeClass('soldout').show().find(':radio').removeAttr('disabled','disabled').removeAttr('checked');
+    }
+    else {
+      $(this).addClass('soldout').hide().find(':radio').removeAttr('checked').attr('disabled','disabled');
+    }
+  });
+  if (jQuery.inArray(initialValue, availableOptions) !== -1) {
+    selector.val(initialValue);
+  }
+  selector.trigger('change');  
+  };
+
+  Shopify.linkOptionSelectors_{{ product.id }}__qv = function(product) {
+    // Building our mapping object.
+    for (var i=0; i<product.variants.length; i++) {
+      var variant = product.variants[i];
+      if (variant.available) {
+        // Gathering values for the 1st drop-down.
+        Shopify.optionsMap['root'] = Shopify.optionsMap['root'] || [];
+        Shopify.optionsMap['root'].push(variant.option1);
+        Shopify.optionsMap['root'] = Shopify.uniq(Shopify.optionsMap['root']);
+        // Gathering values for the 2nd drop-down.
+        if (product.options.length > 1) {
+          var key = variant.option1;
+          Shopify.optionsMap[key] = Shopify.optionsMap[key] || [];
+          Shopify.optionsMap[key].push(variant.option2);
+          Shopify.optionsMap[key] = Shopify.uniq(Shopify.optionsMap[key]);
+        }
+        // Gathering values for the 3rd drop-down.
+        if (product.options.length === 3) {
+          var key = variant.option1 + ' / ' + variant.option2;
+          Shopify.optionsMap[key] = Shopify.optionsMap[key] || [];
+          Shopify.optionsMap[key].push(variant.option3);
+          Shopify.optionsMap[key] = Shopify.uniq(Shopify.optionsMap[key]);
+        }
+      }
+    }
+    // Update options right away.
+    Shopify.updateOptionsInSelector_{{ product.id }}__qv(0);
+    if (product.options.length > 1) Shopify.updateOptionsInSelector_{{ product.id }}__qv(1);
+    if (product.options.length === 3) Shopify.updateOptionsInSelector_{{ product.id }}__qv(2);
+    // When there is an update in the first dropdown.
+    jQuery("#p{{ product.id }}__qv .single-option-selector:eq(0)").change(function() {
+    Shopify.updateOptionsInSelector_{{ product.id }}__qv(1);
+    if (product.options.length === 3) Shopify.updateOptionsInSelector_{{ product.id }}__qv(2);
+    return true;
+  });
+  // When there is an update in the second dropdown.
+  jQuery("#p{{ product.id }}__qv .single-option-selector:eq(1)").change(function() {
+  if (product.options.length === 3) Shopify.updateOptionsInSelector_{{ product.id }}__qv(2);
+  return true;
+  });  
+  };
+  {% if product.available and product.options.size > 1 %}
+  var $addToCartForm{{ product.id }}__qv = $('#p{{ product.id }}__qv form[action="/cart/add"]');
+                                             if (window.MutationObserver && $addToCartForm{{ product.id }}__qv.length) {
+    if (typeof observer{{ product.id }}__qv === 'object' && typeof observer{{ product.id }}__qv.disconnect === 'function') {
+      observer{{ product.id }}__qv.disconnect();
+    }
+    var config = { childList: true, subtree: true };
+    var observer{{ product.id }}__qv = new MutationObserver(function() {
+      Shopify.linkOptionSelectors_{{ product.id }}__qv({{ product | json }});
+      observer{{ product.id }}__qv.disconnect();
+    });  
+    observer{{ product.id }}__qv.observe($addToCartForm{{ product.id }}__qv[0], config);
+  }
+  {% endif %}
+
+</script>
+
+{% else %}
+<!-- This is for collection -->
+
+<script>
+  // (c) Copyright 2016 Caroline Schnapp. All Rights Reserved. Contact: mllegeorgesand@gmail.com
+  // See https://docs.shopify.com/themes/customization/navigation/link-product-options-in-menus
+
+  var Shopify = Shopify || {};
+
+  Shopify.optionsMap = {};
+
+//   console.log("//////////////////////////////////////////");
+  
+  Shopify.updateOptionsInSelector_{{ product.id }} = function(selectorIndex) {
+
+    switch (selectorIndex) {
+      case 0:
+        var key = 'root';
+        var selector = jQuery('#p{{ product.id }} .single-option-selector:eq(0)');
+//         console.log(key);
+//         console.log(selector);
+//         console.log("@@@@@@@=============================");
+        break;
+      case 1:
+        var key = jQuery('#p{{ product.id }} .single-option-selector:eq(0)').val();
+        var selector = jQuery('#p{{ product.id }} .single-option-selector:eq(1)');
+//         console.log(key);
+//         console.log(selector);
+//         console.log("$$$$$$$==================");
+        break;
+      case 2:
+        var key = jQuery('#p{{ product.id }} .single-option-selector:eq(0)').val();  
+        key += ' / ' + jQuery('#p{{ product.id }} .single-option-selector:eq(1)').val();
+        var selector = jQuery('#p{{ product.id }} .single-option-selector:eq(2)');
+//         console.log(key);
+//         console.log(selector);
+//         console.log("#######=========");
+    }
+    
+    var initialValue = selector.val();
+//     console.log("value===="+initialValue);
+    selector.empty(); 
+    var availableOptions = Shopify.optionsMap[key];
+//     console.log(availableOptions);
+    
+    for (var i=0; i<availableOptions.length; i++) {
+      var option = availableOptions[i];
+//       console.log(option);
+      var newOption = jQuery('<option></option>').val(option).html(option);
+//       console.log(newOption);
+      selector.append(newOption).addClass('ddddd');
+//       console.log(selector.append(newOption).addClass('ddddd'));
+    }
+    
+    jQuery('#p{{ product.id }} .swatch[data-option-index="' + selectorIndex + '"] .swatch-element').each(function() {
+      if (jQuery.inArray($(this).attr('data-value'), availableOptions) !== -1) {
+      
+//       console.log(jQuery.inArray($(this).attr('data-value'), availableOptions));
+        $(this).removeClass('soldout').show().find(':radio').removeAttr('disabled','disabled').removeAttr('checked');
+      }
+      else {
+//         console.log("else==");
+//         console.log(jQuery.inArray($(this).attr('data-value'), availableOptions)+"=======");
+        $(this).addClass('soldout').hide().find(':radio').removeAttr('checked').attr('disabled','disabled');
+      }
+  });
+  
+  if (jQuery.inArray(initialValue, availableOptions) !== -1) {
+    selector.val(initialValue);
+//     console.log("initialValue="+initialValue);
+//     console.log(selector.val(initialValue));
+  }
+  selector.trigger('change');  
+  };
+
+  Shopify.linkOptionSelectors_{{ product.id }} = function(product) {
+
+    // Building our mapping object.
+    for (var i=0; i<product.variants.length; i++) {
+      var variant = product.variants[i];
+      if (variant.available) {
+        // Gathering values for the 1st drop-down.
+        Shopify.optionsMap['root'] = Shopify.optionsMap['root'] || [];
+        Shopify.optionsMap['root'].push(variant.option1);
+        Shopify.optionsMap['root'] = Shopify.uniq(Shopify.optionsMap['root']);
+        // Gathering values for the 2nd drop-down.
+        if (product.options.length > 1) {
+          var key = variant.option1;
+          Shopify.optionsMap[key] = Shopify.optionsMap[key] || [];
+          Shopify.optionsMap[key].push(variant.option2);
+          Shopify.optionsMap[key] = Shopify.uniq(Shopify.optionsMap[key]);
+        }
+        // Gathering values for the 3rd drop-down.
+        if (product.options.length === 3) {
+          var key = variant.option1 + ' / ' + variant.option2;
+          Shopify.optionsMap[key] = Shopify.optionsMap[key] || [];
+          Shopify.optionsMap[key].push(variant.option3);
+          Shopify.optionsMap[key] = Shopify.uniq(Shopify.optionsMap[key]);
+        }
+      }
+    }
+    // Update options right away.
+    Shopify.updateOptionsInSelector_{{ product.id }}(0);
+    if (product.options.length > 1) Shopify.updateOptionsInSelector_{{ product.id }}(1);
+    if (product.options.length === 3) Shopify.updateOptionsInSelector_{{ product.id }}(2);
+    // When there is an update in the first dropdown.
+    jQuery("#p{{ product.id }} .single-option-selector:eq(0)").change(function() {
+    Shopify.updateOptionsInSelector_{{ product.id }}(1);
+    if (product.options.length === 3) Shopify.updateOptionsInSelector_{{ product.id }}(2);
+    return true;
+  });
+  
+  // When there is an update in the second dropdown.
+  jQuery("#p{{ product.id }} .single-option-selector:eq(1)").change(function() {
+    if (product.options.length === 3) Shopify.updateOptionsInSelector_{{ product.id }}(2);
+    return true;
+  });  
+  };
+  
+  {% if product.available and product.options.size > 1 %}
+  var $addToCartForm{{ product.id }} = $('#p{{ product.id }} form[action="/cart/add"]');
+                                         
+//   console.log($addToCartForm{{ product.id }});
+  if (window.MutationObserver && $addToCartForm{{ product.id }}.length) {
+    if (typeof observer{{ product.id }} === 'object' && typeof observer{{ product.id }}.disconnect === 'function') {
+      observer{{ product.id }}.disconnect();
+    }
+    var config = { childList: true, subtree: true };
+    var observer{{ product.id }} = new MutationObserver(function() {
+      Shopify.linkOptionSelectors_{{ product.id }}({{ product | json }});
+      observer{{ product.id }}.disconnect();
+    });  
+    observer{{ product.id }}.observe($addToCartForm{{ product.id }}[0], config);
+  }
+  {% endif %}
+
+</script>
+{% endif %}

@@ -1,0 +1,146 @@
+<div class="main-wrapper">
+  {% include 'breadcrumb' %}
+  <section class="shop-all-page-wrapper pt-80 pb-80 search_page" data-section="search">
+    <div class="container">
+      <form action="/search" method="get" class="contact-form search-form">
+        <div class="row flex flex--align-start">
+          <div class="col--10--dsktp col--12--tblt col--12--mbl">
+            <div class="form-group">
+              <input type="text"  name="q" value="{{search.terms  | escape}}" class="form-control" placeholder="{{ 'searchs.search.placeholder' | t }}"  >
+            </div>
+          </div>
+          <div class="col--2--dsktp col--12--tblt col--12--mbl text-center btn-cool">
+            <button class="btn submit-btn contact_us_submit" type="submit">{{ 'searchs.search.button' | t }}</button>
+          </div>
+        </div>
+      </form>
+      <div class="section-title text-center pb-80">
+        <h2 class="first-letter">{{ search.results_count }} {% unless search.results_count == 0 %}{{ search.results_count | pluralize: 'Result', 'Results' }}{% else %}{{ 'searchs.search.result' | t }}{% endunless %}</h2>
+      </div>
+      {% if search.performed %}
+      <div class="row flex">
+        <div class="col--12--dsktp col--12--tblt col--12--mbl">
+          <div class="rightbar-wrapper">
+            <div class="collection-gird-view-tab-content collection-cat-tab-body grid-view-layout">
+              {% if search.results_count > 0 %}
+              {% paginate search.results by section.settings.paginate %}
+              <div class="row flex">
+                {% for item in search.results %}
+
+                {% if item.object_type == 'article' %}
+                <div class="col--4--dsktp col--6--tblt col--12--mbl product-item article-search" >
+                  <div class="product-item-body">
+                    {% if item.image  %}
+                    {% assign image = item.image %}
+                    {% assign hover_image = item.image %}
+                    {% endif %}
+                    {% if image != blank %}
+                    <div class="product-item-img">
+                      <a href="{{ item.url }}" class="product-img">
+                        <img  loading="lazy" src="{{ image | img_url:'master' }}" alt="{{ image.alt }}">
+                        <div class="hover-image">
+                          <img  loading="lazy" src="{{ hover_image | img_url:'master' }}" alt="{{ hover_image.alt }}">
+                        </div>
+                      </a>
+                    </div>
+                    {% endif %}
+                    <div class="prodetail-flex flex">
+                      <div class="produt-content">
+                        <p>{{ item.title | truncate: 30, "..."  }}</p>
+                        <div class="pprice">
+                          <ins>{{ item.content | truncate: 30, "..."  }}</ins>                       
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                {% if item.object_type == 'page' %}
+                <div class="col--4--dsktp col--6--tblt col--12--mbl product-item page-search" >
+                  <div class="product-item-body">
+                    <div class="prodetail-flex flex">
+                      <a href="{{ item.url }}" class="product-img">
+                        <div class="produt-content">
+                          <p>{{ item.title | truncate: 30, "..."  }}</p>
+                          <div class="pprice">
+                            <ins>{{ item.content  }}</ins>                       
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+                {% if item.object_type == 'product' %}
+                <div class="col--4--dsktp col--6--tblt col--12--mbl product-item product-search" >
+                  <div class="product-item-body">
+                    {% if item.images  %}
+                    {% assign image = item.featured_image %}
+                    {% if item.images[1] %}
+                    {% assign hover_image = item.images[1] %}
+                    {% else %}
+                    {% assign hover_image = item.featured_image %}
+                    {% endif %}
+                    {% if image != blank and hover_image != blank %}
+                    <div class="product-item-img">
+                      <a href="{{ item.url }}" class="product-img">
+                        <img loading="lazy"  src="{{ image | img_url:'master' }}" alt="{{ image.alt }}">
+                        <div class="hover-image">
+                          <img  loading="lazy" src="{{ hover_image | img_url:'master' }}" alt="{{ hover_image.alt }}">
+                        </div>
+                      </a>
+                      <span class="wishlist-btn">
+                        {% include 'icons' with 'product_wishlist' %}
+                      </span>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+                    <div class="prodetail-flex flex">
+                      <div class="produt-content">
+                        <p>{{ item.title | truncate: 30, "..."    }}</p>
+                        <div class="pprice">
+                          <ins>{{ item.selected_or_first_available_variant.price | money }}</ins>
+                          {% if item.selected_or_first_available_variant.compare_at_price > item.selected_or_first_available_variant.price %}
+                          <del>{{ item.selected_or_first_available_variant.compare_at_price | money }}</del>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+
+                {% endfor %}
+                {% include 'pagination' %}
+              </div>
+              {% endpaginate %}
+              {% else %}
+              <div class="text-center empty_search">	
+                <h3>{{ 'searchs.search.noresult_title' | t }}</h3>
+                <p>{{ 'searchs.search.noresult' | t: terms:search.terms }}</p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% schema %}
+{
+"name": "Search Page",
+"settings": [
+{
+"type":"range",
+"id":"paginate",
+"label":"Result-Item show per page",
+"min":1,
+"max":20,
+"default":10
+}
+]	
+}
+{% endschema %}
+

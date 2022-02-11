@@ -1,0 +1,158 @@
+<section class="best-sellers best-sellers_test" data-section="check_live_test">
+  <div class="container">
+    {% if section.settings.text != blank %}
+    <h2 class="h3 text-center">{{ section.settings.text }}</h2>
+    {% endif %}
+    <div class="row grid-4 text-center">
+      {% for block in section.blocks %}
+      {% assign product = all_products[block.settings.product_id] %}
+      <div class="product-item">
+        <div class="product-item-cover">
+          <div class="product_item_image__c">
+            <div class="product_item_image">
+              {% if product !=blank %}
+              <div class="product-image coll_pro_img_{{ product.id }}" data-id="{{ product.id }}">
+                <a><img  loading="lazy" src="{{ product | img_url: "master" }}" alt="NOUGAT LIMAR 150g"></a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <form action="/cart/add" class="add_to_cart" method="post" id="add_q">
+            <div class="product-meta">
+              <h5><a href="#">{{ product.title }}</a></h5>
+              <p>{{ product.price | money}} </p>
+
+              <div class="prd-size-btngrp select clearfix" {% if hide_default_title %} style="display:none"{% endif %}>
+                <select name="id" data-productid="{{ product.id }}" id="product-select">
+                  {% for variant in product.variants %}
+                  <option value="{{ variant.id }}" data-id="{{ variant.id }}">{{ variant.title }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="other_color" style="display: flex;">
+                {% capture oc %}
+                {% for tag in product.tags %}
+                {% if tag contains '#' %}
+                {% assign p = tag | remove: '#' %}
+                {% assign pro = all_products[p] %}
+                <div class="otherColor " data-handle="{{ pro.handle }}" data-pro_id="{{ product.id }}">
+                  <a>
+                    {% assign hasCI = false %}
+                    <img  loading="lazy" class="{% if pro.handle == product.handle %}active{% endif %}" src="{{ pro.featured_image | img_url : '50x50', crop: 'center' }}" alt="" />
+                  </a>
+                </div>
+                {% assign hascolor = true %}
+                {% endif %}
+                {% endfor %}
+                {% endcapture %}
+                {% if hascolor %}{{ oc }}{% endif %}
+              </div>
+              <div class="add-to-cart">
+                <a href="/cart">Add to Cart</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<style>
+  .best-sellers_test .selector-wrapper{
+    display: block;
+  }
+</style>
+<script>
+   var selectCallback = function(variant, selector) {
+     var val = selector.product.id;
+     var price='#p'+val+' .price';
+     var btn =  '#p'+val+' .add_cart_btn';
+    if (variant) {
+      if (variant.available) {
+        // Selected a valid variant that is available.
+        $(btn).removeClass('disabled').removeAttr('disabled').text('Add to Cart').fadeTo(200,1);
+      } else {
+        // Variant is sold out.
+        $(btn).text('Sold Out').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+      }
+      // Whether the variant is in stock or not, we can update the price and compare at price.
+      if ( variant.compare_at_price > variant.price ) {
+        $(price).html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, "") +'</span>'+'&nbsp;<s class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, "")+ '</s>');
+      } else {
+        $(price).html('<span class="product-price">'+ Shopify.formatMoney(variant.price, "") + '</span>' );
+      }
+    } else {
+      // variant doesn't exist.
+      $(btn).text('Unavailable').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+    }
+     
+     // BEGIN SWATCHES
+     if (variant) {
+       var form = jQuery('#' + selector.domIdPrefix).closest('form');
+       for (var i=0,length=variant.options.length; i<length; i++) {
+         var radioButton = form.find('.swatch[data-option-index="' + i + '"] :radio[value="' + variant.options[i] +'"]');
+         if (radioButton.size()) {
+           radioButton.get(0).checked = true;
+         }
+       }
+     }
+     // END SWATCHES
+     
+     $('body').on("click",".otherColor",function(e){
+       e.preventDefault();
+       if($(this).find('a img').hasClass('active')){
+         e.prevetDefault();
+       }
+       else{
+       }
+       var url="";
+       var url1='/products/'+$(this).data('handle')+'.js';
+       jQuery.getJSON(url1, function(product) {
+         url=product.url;
+         var url1 = url;
+         url+='?view=alt';
+         $.get(url,function(data){
+           $('.best-sellers_test').html(data);
+         });
+       });
+     });
+     
+ }
+   
+   jQuery(document).ready(function($){
+     new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback, enableHistoryState: true });
+   });
+    
+</script>
+{% schema %}
+  {
+    "name": "check live test",
+    "settings": [
+		{
+			"type": "text",
+			"id": "text",
+			"label": "Title"
+		}
+	],
+	"blocks": [
+		{
+			"name": "product",
+			"type": "product",
+			"settings": [
+				{
+					"type": "product",
+                    "id": "product_id",
+                    "label": "Select Product"
+				}
+			]
+		}
+	],
+	"presets": [
+		{
+			"name": "check live test",
+			"category": "check live test"
+		}
+	]
+  }
+{% endschema %}

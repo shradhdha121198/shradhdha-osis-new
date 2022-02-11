@@ -1,0 +1,234 @@
+{% comment %}
+Set the extension of your color files below. Use 'png', 'jpeg', 'jpg' or 'gif'.
+{% endcomment %}
+{% assign file_extension = 'png' %}
+{% if swatch == blank %}
+<div class="swatch error">
+  <p>You must include the snippet swatch.liquid with the name of a product option.</p> 
+  <p>Use: <code>{% raw %}{% include 'swatch' with 'name of your product option here' %}{% endraw %}</code></p>
+  <p>Example: <code>{% raw %}{% include 'swatch' with 'Color' %}{% endraw %}</code></p>
+</div>
+{% else %}
+{% assign found_option = false %}
+{% assign is_color = false %}
+{% assign option_index = 0 %}
+{% for option in product.options %}
+{% if option == swatch %}
+{% assign found_option = true %}
+{% assign option_index = forloop.index0 %}
+<style>
+  label[for="product-select-option-{{ option_index }}"] { display: none; }
+  #product-select-option-{{ option_index }} { display: none; }
+  #product-select-option-{{ option_index }} + .custom-style-select-box { display: none !important; }
+</style>
+<!-- <script>
+  $(window).load(function() { 
+    var option_select = ".selector-wrapper:eq("+{{option_index}}")";
+    $(option_select).hide();
+    {% if index %}
+    $('#{{index}}').find('option_select').hide();
+    {% endif %}
+  }
+</script> -->
+<script>$(window).load(function() { $('.selector-wrapper:eq({{ option_index }})').hide(); });</script>
+{% assign downcased_option = swatch | downcase %}
+{% if downcased_option contains 'color' or downcased_option contains 'colour' %}
+{% assign is_color = true %}
+{% endif %}
+{% endif %}
+{% endfor %}
+{% unless found_option %}
+<div class="swatch error">
+  <p>You included the snippet swatch.liquid with the name of a product option — <code>'{{ swatch }}'</code> — that does not belong to your product.</p>
+  <p>Use <code>{% raw %}{% include 'swatch' with 'name of your product option here' %}{% endraw %}</code></p>
+  <p>Example: <code>{% raw %}{% include 'swatch' with 'Color' %}{% endraw %}</code></p>
+  <p><strong>This is case-sensitive!</strong> Do not put in <code>'color'</code> if your product option name is <code>'Color'</code>.</p>
+</div>
+{% else %}
+<div class="swatch clearfix" data-option-index="{{ option_index }}" data-value="Color">
+  <div class="header">{{ swatch }}: <span></span></div>
+  {% assign values = '' %}
+  
+  {% assign p = 1 %}
+  
+  {% for variant in product.variants %}
+  {% assign value = variant.options[option_index] %}
+  
+  {% if ff == true and  p == 4 %}
+  {% assign v_size = product.options_by_name['Color'].values %}
+  <a href="{{ product.url }}"><b>{{ v_size | size | minus: p | plus: 1 }}+ MORE</b></a>
+  {% break %}
+  {% endif %}
+  
+  {% unless values contains value %}
+  {% assign values = values | join: ',' %}
+  {% assign values = values | append: ',' | append: value %} 
+  {% assign values = values | split: ',' %}
+  <!--   this option_label_id for collection page  -->
+  
+  {% capture option_label_id %}swatch-{{ option_index }}-{{value | handle }}-{{ index }}-{{ from_qv }}{% endcapture %}
+  
+  <!--   end add for issue in selected varint click then change other product variant change -->
+  
+  <div data-value="{{ value | escape }}" class="swatch-element {% if is_color %}color {% endif %}{{ value | handle }} {% if variant.available %}available{% else %}soldout{% endif %}">
+    
+    {% assign p = p | plus: 1 %}
+    
+    {% if is_color %}
+    <div class="tooltip">{{ value }}</div>
+    {% endif %}
+    <input id="{{ option_label_id }}" class="input_class"  type="radio" name="option-{{ option_index }}" data-id="{{ variant.id }}" value="{{ value | escape }}"{% if forloop.first %} {% endif %} {% unless variant.available %}disabled{% endunless %} />
+    
+    
+    
+    
+    
+    <!--     start code for Pack varinat and other different variant -->
+    {% if option == 'Pack' %}
+    {% for variant in product.variants %}
+    {% if variant.options contains value %}
+    {% if variant.compare_at_price > variant.price %}
+    {% assign save_price = variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price %}
+    {% if save_price > 0 %}
+    {% capture percentage %}
+    ({{save_price}}% off)
+    {% endcapture %}
+    {% endif %}
+    {% endif %}
+    {% break %}
+    {% endif %}
+    {% endfor %}
+    {% if is_color %}
+        {% if variant.image %}
+        <label for="{{ option_label_id }}" class="swatch_click" data-value="{{value}}" data-id="{{variant.id}}" style="background-color: {{ value | split: ' ' | last | handle }};
+                                                  background-image:url('{{ variant.image | img_url:"small" }}'); box-shadow: 2px 2px 3px 1px {{value}};">
+          <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+        </label>
+        {% else %}
+        <label for="{{ option_label_id }}" class="swatch_click" data-value="{{value}}" style="background-color: {{ value | split: ' ' | last | handle }}; 
+                                                  background-image: url({{ value | handle | append: '.' | append: file_extension | asset_url }}); box-shadow: 2px 2px 3px 1px {{value}};">
+          <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+        </label>
+        {% endif %}
+    {% else %}
+    <label for="{{ option_label_id }}" class="swatch_click" data-value="{{ value }}" >
+      {{ value }} {{percentage}}
+      <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+    </label>
+    {% endif %}
+
+    {% else %}
+    {% if is_color %}
+        {% if variant.image %}
+        <label for="{{ option_label_id }}" class="swatch_click" data-value="{{value}}" data-id="{{variant.id}}" style="background-color: {{ value | split: ' ' | last | handle }};
+                                                  background-image:url('{{ variant.image | img_url:"small" }}'); box-shadow: 2px 2px 3px 1px {{value}};">
+          <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+        </label>
+        {% else %}
+        <label for="{{ option_label_id }}" class="swatch_click" data-value="{{value}}" style="background-color: {{ value | split: ' ' | last | handle }}; 
+                                                  background-image: url({{ value | handle | append: '.' | append: file_extension | asset_url }}); box-shadow: 2px 2px 3px 1px {{value}};">
+          <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+        </label>
+        {% endif %}
+    {% else %}
+    <label for="{{ option_label_id }}" class="swatch_click" data-value="{{ value }}" >
+      {{ value }}
+      <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+    </label>
+    {% endif %}
+    {% endif %}
+    <!--     end code for Pack varinat and other different variant -->
+
+    
+    
+    
+    
+    
+    
+    <!--     start code for varint basic code before any change -->
+    {% comment %}
+    {% if is_color %}
+        {% if variant.image %}
+        <label for="{{ option_label_id }}" class="swatch_click" data-value="{{value}}" data-id="{{variant.id}}" style="background-color: {{ value | split: ' ' | last | handle }};
+                                                  background-image:url('{{ variant.image | img_url:"small" }}'); box-shadow: 2px 2px 3px 1px {{value}};">
+          <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+        </label>
+        {% else %}
+        <label for="{{ option_label_id }}" class="swatch_click" data-value="{{value}}" style="background-color: {{ value | split: ' ' | last | handle }}; 
+                                                  background-image: url({{ value | handle | append: '.' | append: file_extension | asset_url }}); box-shadow: 2px 2px 3px 1px {{value}};">
+          <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+        </label>
+        {% endif %}
+    
+    {% else %}
+    <label for="{{ option_label_id }}" class="swatch_click" data-value="{{ value }}" >
+      {{ value }}
+      <img  loading="lazy" class="crossed-out" src="{{ 'soldout.png' | asset_url }}" />
+    </label>
+    {% endif %}
+    {% endcomment %}
+    <!--     end code for varint basic code before any change -->
+
+    
+    
+  </div>
+  {% endunless %}
+  {% if variant.available %}
+  <script>
+    jQuery('.swatch[data-option-index="{{ option_index }}"] .{{ value | handle }}').removeClass("soldout").addClass("available").find(":radio").removeAttr("disabled");
+  </script>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endunless %}
+{% endif %}
+<style>
+  .swatch .swatch-element {
+    float:left;
+    -webkit-transform:translateZ(0); /* webkit flicker fix */
+    -webkit-font-smoothing:antialiased; /* webkit text rendering fix */
+    /* Spacing between buttons */
+    margin:0px 10px 10px 0;
+    /* To position the sold out graphic and tooltip */
+    position:relative;
+  }
+  .crossed-out { position:absolute; width:100%; height:100%; left:0; top:0; }
+  .swatch .swatch-element .crossed-out { display:none; }
+  .swatch .swatch-element.soldout .crossed-out { display:block; }
+</style>
+<!-- my css -->
+<style>
+  .swatch_click{
+    background-position: top;
+  }
+  .selector-wrapper{
+    display: none;
+  }
+  .header{
+    text-align: left;
+  }
+</style>
+<script>
+  $('.swatch_click').on("click",function(){
+    var value=$(this).attr('data-value');
+    $(this).parents('.swatch').find('.header span').html(value);
+  });
+</script>
+
+{% if option == 'Pack' and template contains 'product'%}
+<style>
+  .swatch-element.available{
+    width: 100%;
+  }
+  label.swatch_click{
+    width: 100%;
+    font-weight: bold;
+  }
+  .swatch input:checked+label{
+    box-shadow: 3px 3px 3px 1px #ff677e;
+    background: #ffb6c1;
+    color: white;
+    border-color: white;
+  }
+</style>
+{% endif %}

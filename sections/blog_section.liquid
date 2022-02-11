@@ -1,0 +1,52 @@
+<section class="ctas-section" data-section="blog_section">
+  <div class="container">
+    <div class="row">
+      {%- assign blog = blogs[section.settings.blog_id] -%}
+      {% for article in blog.articles %}
+      <div class="cta-col three">
+        {% if article.title != blank %}
+        <h2 class="text-center">{{ article.title }}</h2>
+        {% endif %}
+        <div class="cta-col-cover">
+          {% if article != blank %}
+          <div class="cta-image">
+            <img loading="lazy" src="{{ article | img_url: "master" }}" alt="LEARN">
+          </div>
+          {% endif %}
+          <div class="cta-content">
+            {{ article.content | truncate: 100 }}
+          </div>
+          {% if section.settings.btn_text != blank %}
+          <div class="button-wrap btn-border4">
+            <a href="{{ article.url }}">{{ section.settings.btn_text }}</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% schema %}
+  {
+    "name": "Blog Post",
+    "settings": [
+		{
+			"type": "blog",
+			"id": "blog_id",
+			"label": "Select Blog"
+		},
+		{
+			"type": "text",
+			"id": "btn_text",
+			"label": "Blog Text"
+		}
+	],
+	"presets": [
+		{
+			"name": "Blog Section",
+			"category": "Blog Section"
+		}
+	]
+  }
+{% endschema %}

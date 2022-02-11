@@ -1,0 +1,88 @@
+<!-- // html structrue : 
+<section class="site-bradcrumbs">
+  <div class="container">
+    <ul class="breadcrumb flex--align-center flex--justify-center flex">
+      <li><a href="#">Home</a></li>
+      <li class="active"><span>page</span></li>
+    </ul>
+  </div>
+</section> -->
+
+
+{%- unless template == 'index'  or template == '404' -%}
+{%- assign t = template | split: '.' | first -%}
+
+<section class="site-bradcrumbs" data-section="breadcrumb">
+  <div class="container">
+    <ul class="breadcrumb flex--align-center flex--justify-center flex">
+      <li><a href="{{ shop.url }}">Home</a></li>
+      {%- case t -%}
+      {%- when 'page' -%}
+      <li class="active"> <span>{{ page.title }}</span></li>
+      {%- when 'product' -%}
+      {%- if collection.url -%}
+      <li>
+        {{ collection.title | link_to: collection.url }}
+      </li>
+      {%- endif -%}
+      <li class="active">
+        <span>{{ product.title }}</span>
+      </li>
+      {%- when 'collection' and collection.handle -%}
+      {%- if current_tags -%}
+      <li>
+        {{ collection.title | link_to: collection.url }}
+      </li>
+      <li class="active">
+        {%- capture tag_url -%}{{ collection.url }}/{{ current_tags | join: "+"}}{%- endcapture -%}
+        <span>{{ current_tags | join: " + "}}</span>
+      </li>
+      {%- else -%}
+      <li class="active">
+        <span>{{ collection.title }}</span>
+      </li>
+      {%- endif -%}
+      {%- when 'blog' -%}
+      {%- if current_tags -%}
+      <li>
+        {{ blog.title | link_to: blog.url }}
+      </li>
+      <li class="active">
+        {%- capture tag_url -%}{{blog.url}}/tagged/{{ current_tags | join: "+" }}{%- endcapture -%}
+        <span>{{ current_tags | join: " + " }}</span>
+      </li>
+      {%- else -%}
+      <li class="active">
+        <span>{{ blog.title }}</span>
+      </li>
+      {%- endif -%}
+      {%- when 'article' -%}
+      <li>
+        {{ blog.title | link_to: blog.url }}
+      </li>
+      <li class="active">
+        <span>{{ article.title }}</span>
+      </li>
+      {%- when 'list-collections' -%}
+      <li class="active">
+        <span>{{ 'general.list_collections.title' | t }}</span>
+      </li>
+      {%- when 'cart' -%}
+      <li class="active">
+        <span>{{ 'general.cart_page.title' | t }}</span>
+      </li>
+      {%- else -%}
+      <li class="active">
+        <span>{{ page_title }}</span>
+      </li>
+      {%- endcase -%}
+    </ul>
+  </div>
+</section>
+
+
+{%- endunless -%}
+
+
+
+

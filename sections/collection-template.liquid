@@ -1,0 +1,933 @@
+<section class="page-header dataBg" data-bg-src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/shop-header_b76e3a0d-9d6b-4b75-a30d-9250c0815e7a.png?v=1611131560">
+  <div class="container">
+    <h1 class="text-center color4">{{ collection.title }}</h1>
+  </div>
+</section>
+
+<!-- This 4-5 line for list and grid  -->
+{%- if collection.title == 'Products' -%}
+{%- assign url_grid =  '/collections/all' -%}
+{%- else -%}
+{%- assign url_grid =  collection.url -%}
+{%- endif -%}
+
+<section class="shop-section">
+  <div class="container-big">
+    <div class="row">
+      <div class="left">
+        <div class="browse-title">
+          <h5>BROWSE CATEGORIES
+          </h5>
+          <button>Back</button>
+        </div>
+        <div class="grid-uniform ">
+          {% if request.page_type == 'collection' and collection.all_tags.size > 0 %}
+          {% assign categories = '' %}
+          {% for tag in collection.all_tags %}
+          {% if tag contains '_' %}
+          {% capture categories %}{% unless categories == blank  %}{{ categories }}|{% endunless %}{{ tag | split: '_' | first }}{% endcapture %}
+          {% endif %}
+          {% endfor %}
+          {% assign cat_array = categories | split: '|' | uniq %}
+          {% endif %}
+          {%- for cat_item in cat_array -%}
+          <div class="filter-col">
+            <div class="grid-item small--one-half medium--one-third cl-cfg-box">
+              <div class="cl-cfg-head eg-pls-circle-plus eg-pls-closed">
+                <p>{{ cat_item }}</p>
+                <div class="eg-pls-circle">
+                  <div class="eg-pls-horizontal"></div>
+                  <div class="eg-pls-vertical"></div>
+                </div>
+              </div>
+              <div class="cl-cfg-menu">
+                <ul class="list_read" id="list_{{ forloop.index }}">
+                  {%- for tag in collection.all_tags -%}
+                  {%- assign cat = tag | split: '_' | first -%}
+                  {%- if cat != tag and cat_item == cat -%}
+                  {%- if current_tags contains tag -%}
+                  <li class="advanced-filter active-filter" data-group="{{ cat_item }}" data-handle="{{ tag | handle }}">
+                    {% capture label %}
+                    <label>{{ tag | remove_first: cat_item | remove_first: '_' }}
+                      <input type="checkbox" checked name="eg-checkboxin" id="eg-checkboxin">
+                      <span class="eg-ctm-check"></span>
+                    </label>
+                    {% endcapture %}
+                    {{ label | link_to_remove_tag: tag }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="11" viewBox="0 0 17 11">
+                      <g>
+                        <g>
+                          <path fill="#b9ad9b"
+                                d="M8.567 10.75L.35 2.533 2.797.085l5.77 5.77 5.77-5.77 2.447 2.448z" />
+                        </g>
+                      </g>
+                    </svg>
+                  </li>
+                  {%- else -%}
+                  <li class="advanced-filter eg-wrapcheck" data-group="{{ cat_item }}" data-handle="{{ tag | handle }}">
+                    {% capture label %}
+                    <label> {{ tag | remove_first: cat_item | remove_first: '_' }}
+                      <input type="checkbox" name="eg-checkboxin" id="eg-checkboxin">
+                      <span class="eg-ctm-check"></span>
+                    </label>
+                    {% endcapture %}
+                    {{ label | link_to_add_tag: tag }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="17" height="11" viewBox="0 0 17 11">
+                      <g>
+                        <g>
+                          <path fill="#b9ad9b"
+                                d="M8.567 10.75L.35 2.533 2.797.085l5.77 5.77 5.77-5.77 2.447 2.448z" />
+                        </g>
+                      </g>
+                    </svg>
+                  </li>
+                  {%- endif -%}
+                  {%- endif -%}
+                  {%- endfor -%}
+                  <a href="#" class="read_more" id="read_more"><span>Readmore</span></a>
+                  <a href="#" class="read_less" id="read_less"><span>Readless</span></a>
+                </ul>
+              </div>
+            </div>
+          </div>
+          {%- endfor -%}
+        </div>
+      </div>
+      <div class="right">
+        <h2 class="h3">{{ collection.title }}</h2>
+        <div class="shop-header">
+          <div class="row ai-c">
+            {% if collection.products_count >1 %}
+            <!--   this is comment for make "custom filter" (this code is perfect run) -->
+			<!-- <div class="filter">
+              <p><span>Filter By:</span></p>
+              <select class="coll-filter">
+                {% for tag in collection.all_tags %}
+                {% if current_tags contains tag %}
+                <option class="option" value="{{ tag | handle }}" selected>{{ tag }}</option>
+                {% else %}
+                <option class="option" vlaue="{{ tag | handle }}">{{ tag }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div> -->
+            
+            
+            <!--  this is comment for "shopify 2.0 filter" (this code is perfect run)-->
+            {% comment %}
+            <div class="filter">
+              <p><span>Filter By:</span></p>
+              {% assign fil = section.settings.teaxtarea_id %}
+              {% assign splt = fil | split: ',' %}
+              <select class="coll-filter">
+                {% for tag in splt %}
+                {% if collection.tags contains tag %}
+                {% if current_tags contains tag %}
+                <option class="option" value="{{ tag | handle }}" selected>{{ tag | link_to_remove_tag: tag | replace: ' ','-' | remove: '#' }}</option>
+                {% else %}
+                <option class="option" vlaue="{{ tag | handle }}">{{ tag | link_to_tag: tag | replace: ' ','-' | remove: '#' }}</option>
+                {% endif %}
+                {% endif %}
+                {% endfor %}
+              </select>
+            </div> 
+            {% endcomment %}
+            
+            
+            
+            <!-- start shopify 2.0 filter  -->
+            <form class="filter-form">
+              {%- for filter in collection.filters -%}
+              <details class="filter-group">
+                <summary class="filter-group-summary">
+                  <div>
+                    <span>{{ filter.label }}</span>
+                    {%- if filter.active_values.size > 0 -%}
+                    <span>({{ filter.active_values.size }})</span>
+                    {%- endif -%}
+                    <svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-caret" viewBox="0 0 10 6">
+                      <path fill-rule="evenodd" clip-rule="evenodd" d="M9.354.646a.5.5 0 00-.708 0L5 4.293 1.354.646a.5.5 0 00-.708.708l4 4a.5.5 0 00.708 0l4-4a.5.5 0 000-.708z" fill="currentColor"></path>
+                    </svg>
+                  </div>
+                </summary>
+                <div class="filter-group-display">
+                  <div class="filter-group-display__header">
+                    <span class="filter-group-display__header-selected">{{ filter.active_values.size }} selected</span>
+                    {%- if filter.active_values.size > 0 -%}
+                    <a href="{{ filter.url_to_remove }}" class="filter-group-display__header-reset">Reset</a>
+                    {%- endif -%}
+                  </div>
+                  {%- case filter.type -%}
+                  {%- when 'list' -%}
+                  <ul class="filter-group-display__list">
+                    {%- for filter_value in filter.values -%}
+                    <li class="filter-group-display__list-item">
+                      <input type="checkbox" name="{{ filter_value.param_name }}" value="{{ filter_value.value }}" id="Filter-{{ filter.label }}-{{ forloop.index }}"
+                             {%- if filter_value.active -%}checked{%- endif -%} {%- if filter_value.count == 0 and filter_value.active == false -%}disabled{%- endif -%} >
+                      {{ filter_value.label | escape }} ({{ filter_value.count }})
+                    </li>
+                    {%- endfor -%}
+                  </ul>
+                  <div class="filter-group-display__submit">
+                    <input type="submit" value="Apply">
+                  </div>
+                  {%- when 'price_range' -%}
+                  <div class="filter-group-display__price-range">
+                    <div class="filter-group-display__price-range-from">
+                      <span>{{ cart.currency.symbol }}</span>
+                      <input name="{{ filter.min_value.param_name }}" id="Filter-{{ filter.label }}-{{ forloop.index }}"
+                             {%- if filter.min_value.value -%} value="{{ filter.min_value.value | money_without_currency | replace: ',', '' }}" {%- endif -%} 
+                             type="number" placeholder="0" min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" >
+                      <label for="Filter-{{ filter.label }}-{{ forloop.index }}">From</label>
+                    </div>
+                    <div class="filter-group-display__price-range-to">
+                      <span>{{ cart.currency.symbol }}</span>
+                      <input name="{{ filter.max_value.param_name }}" id="Filter-{{ filter.label }}-{{ forloop.index }}"
+                             {%- if filter.max_value.value -%} value="{{ filter.max_value.value | money_without_currency | replace: ',', '' }}" {%- endif -%}
+                             type="number" placeholder="{{ filter.range_max | money_without_currency | replace: ',', '' }}" min="0" max="{{ filter.range_max | money_without_currency | replace: ',', '' }}" >
+                      <label for="Filter-{{ filter.label }}-{{ forloop.index }}">To</label>
+                    </div>
+                  </div>
+                  <div class="filter-group-display__submit">
+                    <input type="submit" value="Apply">
+                  </div>
+                  {%- endcase -%}
+                </div>
+              </details>
+              {%- endfor -%}
+              <div class="active-filters">
+                <a href="{{ collection.url }}" class="active-filters__clear">Clear all</a>
+                {%- for filter in collection.filters -%}
+                    {% if filter.type == "price_range"  %}
+                        {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+                            <a class="active-filters__remove-filter" href="{{ filter.url_to_remove }}">
+                              {%- assign min_value = filter.min_value.value | default: 0 -%}
+                              {%- assign max_value = filter.max_value.value | default: filter.range_max -%}
+                              {{ min_value | money }} - {{ max_value | money }} 
+                              <svg aria-hidden="true" focusable="false" role="presentation" width="12" height="13" class="icon icon-close-small" viewBox="0 0 12 13" fill="#cbb682" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.48627 9.32917L2.82849 3.67098" stroke="#cbb682" stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M2.88539 9.38504L8.42932 3.61524" stroke="#cbb682" stroke-linecap="round" stroke-linejoin="round"></path>
+                              </svg>
+                            </a>
+                        {%- else -%}
+                            {%- for filter_value in filter.active_values -%}
+                                <a class="active-filters__remove-filter" href="{{ filter_value.url_to_remove }}"> {{ filter_value.label }} 
+                                  <svg aria-hidden="true" focusable="false" role="presentation" width="12" height="13" class="icon icon-close-small" viewBox="0 0 12 13" fill="#cbb682" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8.48627 9.32917L2.82849 3.67098" stroke="#cbb682" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M2.88539 9.38504L8.42932 3.61524" stroke="#cbb682" stroke-linecap="round" stroke-linejoin="round"></path>
+                                  </svg>
+                				</a>
+                            {%- endfor -%}
+                        {%- endif -%}
+                	{% else %}
+                        {%- for filter_value in filter.active_values -%}
+                			<a class="active-filters__remove-filter" href="{{ filter_value.url_to_remove }}"> {{ filter_value.label }} 
+                              <svg aria-hidden="true" focusable="false" role="presentation" width="12" height="13" class="icon icon-close-small" viewBox="0 0 12 13" fill="#cbb682" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8.48627 9.32917L2.82849 3.67098" stroke="#cbb682" stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M2.88539 9.38504L8.42932 3.61524" stroke="#cbb682" stroke-linecap="round" stroke-linejoin="round"></path>
+                              </svg>
+                			</a>
+                        {%- endfor -%}
+                    {% endif %}
+                {%- endfor -%}
+              </div>
+            </form>
+            <!-- end shopify 2.0 filter  -->
+
+            
+            {% render 'testing-abc' %}
+            
+            {% endif %}
+          </div>
+        </div>
+        {% if collection.products_count >1 %}
+        <div class="filter">
+          <select class="sort-by">
+            <option value="manual">View By</option>
+            <option value="price-ascending">Price: Low to High</option>
+            <option value="price-descending">Price: High to Low</option>
+            <option value="title-ascending">A-Z</option>
+            <option value="title-descending">Z-A</option>
+            <option value="created-ascending">Oldest to Newest</option>
+            <option value="created-descending">Newest to Oldest</option>
+            <option value="best-selling">Best Selling</option>
+          </select>
+        </div>
+        {% endif %}
+        <div class="grid_list_icons" style="margin-left: 92%;">
+          <div class="row">
+            <div class="grid_icon" style="padding: 10px;">
+              <svg width=20px xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" xmlns:xlink="http://www.w3.org/1999/xlink"> <path data-name="layer2" stroke-miterlimit="10" stroke-width="4" d="M2 2h12v12H2zm24 0h12v12H26zm24 0h12v12H50zM2 50h12v12H2z" stroke-linejoin="miter" stroke-linecap="butt"></path> <path data-name="layer1" stroke-miterlimit="10" stroke-width="4" d="M26 50h12v12H26zm24 0h12v12H50z" stroke-linejoin="miter" stroke-linecap="butt"></path> <path data-name="layer2" stroke-miterlimit="10" stroke-width="4" d="M2 25.988h12v12H2z" stroke-linejoin="miter" stroke-linecap="butt"></path> <path data-name="layer1" stroke-miterlimit="10" stroke-width="4" d="M26 25.988h12v12H26zm24 0h12v12H50z" stroke-linejoin="miter" stroke-linecap="butt"></path> </svg>
+            </div>
+            <div class="list_icon" style="padding: 10px;">
+              <svg width=20px xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" xmlns:xlink="http://www.w3.org/1999/xlink"> <path data-name="layer2" stroke-miterlimit="10" stroke-width="1" d="M2 8h60v8H2zm0 20h60v8H2z" stroke-linejoin="miter" stroke-linecap="round"></path> <path data-name="layer1" stroke-miterlimit="10" stroke-width="1" d="M2 48h60v8H2z" stroke-linejoin="miter" stroke-linecap="round"></path> </svg>
+            </div>
+          </div>
+        </div>
+        <div class="row products grid-4 text-center grid_items" id ="collection_filter_grid_new_id">
+          
+          {% for pro in collection.products %}
+          <div class="product-item" id="p{{ pro.id }}">
+            <form action="/cart/add" method="post" class="add_to_cart">
+              {%- assign current_variant = pro.selected_or_first_available_variant -%}
+              <input type="hidden" name="quantity" id="quantity" value="1">
+              <div class="product-item-cover">
+                
+                <!--  one issue is sold and sale both product mate ? and not work first variant proper  -->
+                <div class="sale_sold_display">
+                  {%- if pro.available == false -%}
+                  <div class="zr-product-slider-sale">
+                    <img  loading="lazy" src="{{ 'sold-out.jpg' | asset_img_url: '50x50'}}" alt="soldout">
+                  </div>
+                  {%- elsif pro.compare_at_price > pro.price -%}
+                  <div class="zr-product-slider-sale">
+                    <img  loading="lazy" src="{{ 'sale-image.jpg' | asset_img_url: '50x50'}}" alt="sale">
+                  </div>
+                  {%- endif -%}
+                </div>
+                
+                <div class="product-image_{{pro.id}} hover_img_parent">
+                  
+                  <!-- disount label = "pro.price" ma all price mathi minimaum/low price consider kare .....so, here write "variant = pro.selected_or_first_available_variant" and "variant.price" -->
+                  {% assign variant = pro.selected_or_first_available_variant %} 
+                  {% if variant.compare_at_price > variant.price %}
+                  {% assign save_price = variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price %}
+                  <span class="discount_label">save - {{save_price}}%</span>
+                  {% endif %}
+                  
+                  <a class="main_img" href="{{ pro.url | within: collection}}"><img  loading="lazy" src="{{ pro | img_url: "master" }}" alt="{{ pro.title }}" ></a>
+                  <a class="hover_img" href="{{ pro.url }}"><img  loading="lazy" src="{{ pro.images[1] | img_url: "master" }}" alt="{{ pro.title }}" ></a>
+                </div>
+                <div class="product-meta">
+                  <h5><a href="{{ pro.url }}">{{ pro.title }}</a></h5>{% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge', jm_style: '', concierge_install: true, product: product %}
+                  <p id="price-field" class="price">{{ pro.price | money_without_trailing_zeros }} </p>
+                  
+                  {% assign hide_default_title = false %}
+                  {% if pro.variants.size == 1 and pro.variants.first.title contains 'Default' %}
+                  {% assign hide_default_title = true %}
+                  {% endif %}
+                  <div class="select_swatch_option" {% if hide_default_title %}style="display: none;"{% endif %}>
+                    <div class="select">
+                      <select id="product_select_{{pro.id}}" name="id" data-p_id_po= {{p_id}}>
+                        {% for variant in pro.variants %}
+                        <option value="{{ variant.id }}">{{ variant.title }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="new_color" style="display: grid;">
+                      {% if pro.available and pro.variants.size > 1 %}
+                      {% for option in pro.options %}
+                      {% include 'swatch' with option, index: pro.id, product: pro %}
+                      {% endfor %}
+                      {% endif %}
+                    </div> 
+                    <div class="swatch_add_msg"></div>
+                  </div>
+                  <div class="add-to-cart" {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+                    {% comment %}
+                    {%- unless current_variant.available -%}
+                    <a class="sold_out">Sold Out</a>
+                    {%- else -%}
+                    <button id="add-to-cart" class="add_cart_btn">Add to Cart</button>
+                    {%- endunless -%}
+                    {% endcomment %}
+                    <button id="add-to-cart" class="add_cart_btn">Add to Cart</button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div class="quick_view_btn"><a href="{{ pro.url }}" class="btn-primary"><span>QuickView</span></a></div>
+          </div>
+          <script>
+            // initialize multi selector for product
+            jQuery(function($) {
+              new Shopify.OptionSelectors("product_select_{{pro.id}}", { product:{{ pro | json }} , onVariantSelected: selectCallback, enableHistoryState: false });
+            });
+          </script>
+          {% render 'linked-option' with product: pro  %}
+          {% endfor %}
+        </div>
+        <ul class="products list_items">
+          {% for pro in collection.products %}
+          <li class="product-item" id="p{{ pro.id }}">
+            <form action="/cart/add" method="post" class="add_to_cart">
+              {%- assign current_variant = pro.selected_or_first_available_variant -%}
+              <input type="hidden" name="quantity" id="quantity" value="1">
+              <li class="list_items_li">
+                <div class="image_li_{{pro.id}}">
+                  {% if pro.compare_at_price > pro.price %}
+                  {% assign save_price = pro.compare_at_price | minus: pro.price | times: 100 | divided_by: pro.compare_at_price %}
+                  <span class="discount_label_li">save - {{save_price}}%</span>
+                  {% endif %}
+                  <a class="main_img" href="{{ pro.url }}"><img  loading="lazy" src="{{ pro | img_url: "master" }}" alt="{{ pro.title }}" ></a>
+                  <a class="hover_img" href="{{ pro.url }}"><img  loading="lazy" src="{{ pro.images[1] | img_url: "master" }}" alt="{{ pro.title }}" ></a>
+                </div>
+                <div class="product-meta">
+                  <h5><a href="{{ pro.url }}">{{ pro.title }}</a></h5>
+                  <p id="price-field" class="price">{{ pro.price | money_without_trailing_zeros }} </p>
+                  {% assign hide_default_title = false %}
+                  {% if pro.variants.size == 1 and pro.variants.first.title contains 'Default' %}
+                  {% assign hide_default_title = true %}
+                  {% endif %}
+                  <div class="select_swatch_option" {% if hide_default_title %}style="display: none;"{% endif %}>
+                    <div class="select">
+                      <select id="product_select_{{pro.id}}" name="id" data-p_id_po= {{p_id}}>
+                        {% for variant in pro.variants %}
+                        <option value="{{ variant.id }}">{{ variant.title }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="new_color" style="display: grid;">
+                      {% if pro.available and pro.variants.size > 1 %}
+                      {% for option in pro.options %}
+                      {% include 'swatch' with option, index: pro.id, product: pro %}
+                      {% endfor %}
+                      {% endif %}
+                    </div> 
+                  </div>
+                  <div class="add-to-cart" {% unless current_variant.available %}disabled="disabled"{% endunless %}>
+                    {% comment %}
+                    {%- unless current_variant.available -%}
+                    <a class="sold_out">Sold Out</a>
+                    {%- else -%}
+                    <button id="add-to-cart" class="add_cart_btn">Add to Cart</button>
+                    {%- endunless -%}
+                    {% endcomment %}
+                    <button id="add-to-cart" class="add_cart_btn">Add to Cart</button>
+                  </div>
+                </div>
+              </li>
+            </form>
+          </li>
+          <script>
+            // initialize multi selector for product
+            jQuery(function($) {
+              new Shopify.OptionSelectors("product_select_{{pro.id}}", { product:{{ pro | json }} , onVariantSelected: selectCallback, enableHistoryState: false });
+            });
+          </script>
+          {% render 'linked-option' with product: pro  %}
+          {% endfor %}
+        </ul>
+        <div class="load-more button6 text-center">
+          <a href="#">Load More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Start For Quickview -->
+<div class="overlay_quick">
+  <div class="popup_quick">
+    <div class="quick_product_detail">
+      
+    </div>
+  </div>
+</div>
+<!-- End For Quickview -->
+<style>
+  .hover_img_parent:hover .main_img{
+    display: none;
+  }
+  .hover_img_parent .hover_img{
+    display: none;
+  }
+  .hover_img_parent:hover .hover_img{
+    display: block;
+  }
+  .disabled{
+    cursor: no-drop !important;
+  }
+  .list_items{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .product-item{
+    list-style: none;
+  }
+  .list_items_li{
+    list-style: none;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .list_items{
+    display: none;
+  }
+  .image_li{
+    width: 50%;
+    padding: 2px 50px 0 0;
+    margin-right: 100px;
+  }
+  .list_item_flex{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .list_item_grid{
+    display: grid;
+  }
+  .display_none{
+    display: none;
+  }
+  .active_icon{
+    fill: #cbb682;
+  }
+  .list_items_li img{
+    max-width: 300px;
+    margin-right: 70px;
+  }
+  .product-item{
+    display: none;
+  }
+  .discount_label{
+    position: absolute;
+    top: 9px;
+    left: -16px;
+    color: white;
+    background: #f44336;
+    padding: 0 10px;
+    transform: rotateZ(310deg);
+    border: 5px #ffc107;
+    border-style: outset;
+    border-radius: 6px;
+  }
+  .discount_label_li{
+    position: absolute;
+    color: white;
+    background: #f44336;
+    padding: 0 10px;
+    left: -31px;
+    top: 77px;
+    transform: rotateZ(310deg);
+    border: 5px #ffc107;
+    border-style: outset;    
+    border-radius: 6px;
+  }
+  .sale_sold_display{
+    position: relative;
+  }
+  .zr-product-slider-sale{
+    position: absolute;
+    top: 0;
+    left: -25px;
+    bottom: 0;
+  }
+</style>
+
+<script>
+   var selectCallback = function(variant, selector) {
+
+     /* start code for "print message after select variant" */
+     $('.swatch_click').on('click', function(){
+       var s ="";
+       $(this).parents('.product-item').find('.header span').each(function(index,val){
+         var comma = $(val).text()  != '' && index !=0  ? ', ' : '';
+         s+= comma + $(val).text();
+       });
+         $(this).parents('.product-item').find('.swatch_add_msg').html("You have selected "+s);
+     });
+     /* end code for "print message after select variant" */
+     
+     
+     var val = selector.product.id;
+     var price='#p'+val+' .price';
+     var btn =  '#p'+val+' .add_cart_btn';
+     
+    /* this code comment for make code "link option with product option" */
+//     if (variant) {
+//       if (variant.available) {
+//         // Selected a valid variant that is available.
+//         $(btn).removeClass('disabled').removeAttr('disabled').text('Add to Cart').fadeTo(200,1);
+//       } else {
+//         // Variant is sold out.
+//         $(btn).text('Sold Out').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+//       }
+//       // Whether the variant is in stock or not, we can update the price and compare at price.
+//       if ( variant.compare_at_price > variant.price ) {
+//         $(price).html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, "") +'</span>'+'&nbsp;<s class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, "")+ '</s>');
+//       } else {
+//         $(price).html('<span class="product-price">'+ Shopify.formatMoney(variant.price, "") + '</span>' );
+//       }
+//     } else {
+//       // variant doesn't exist.
+//       $(btn).text('Unavailable').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+//     }
+
+
+     /* start change image on hover variant ================*/
+        /*  $('.swatch_click').hover(function(){
+            var id = $(this).data('id');
+            {% for pro in collection.products %}
+              var p = '{{ pro.id }}';
+              if(p == val){
+                {% for variant in pro.variants %}
+                   var v = '{{ variant.id }}';
+                   {% if variant.image %}
+                     if(v == id ){
+                        var img = '{{ variant.image | img_url:"master" }}';
+                        $('.product-image_'+{{pro.id}}).find('.main_img').find('img').attr('src',img);
+                        $('.image_li_'+{{pro.id}}).find('.main_img').find('img').attr('src',img);
+                      }
+                    {% endif %}
+                 {% endfor %}
+               }
+             {% endfor %}
+             }, function(){
+            }); */
+       /* end change image on hover variant ================*/
+     
+     /* start change image on select variant (see above code change on hover)==============================*/
+     /*{% for pro in collection.products %}
+     var p = '{{ pro.id }}';
+     if(p == val){
+       {% for variant in pro.variants %}
+       var v = '{{ variant.id }}';
+       {% if variant.image %}
+       if(v == variant.id ){
+         console.log(v);
+         console.log(variant.id);
+         var img = '{{ variant.image | img_url:"master" }}';
+         $('.product-image_{{pro.id}}').find('.main_img').find('img').attr('src',img);
+           $('.image_li_{{pro.id}}').find('.main_img').find('img').attr('src',img);
+       }
+       {% endif %}
+       {% endfor %}
+     }
+     {% endfor %}*/
+     /* end change image on select variant (see above code change on hover)==============================*/
+           
+     
+     /*  start hover and click both (combine above two code) */
+     $('.swatch_click').hover(function(){
+       var id = $(this).data('id');
+       {% for pro in collection.products %}
+       var p = '{{ pro.id }}';
+       if(p == val){
+         {% for variant in pro.variants %}
+         var v = '{{ variant.id }}';
+         {% if variant.image %}
+         if(v == id ){
+           var img = '{{ variant.image | img_url:"master" }}';
+           $('.product-image_'+{{pro.id}}).find('.main_img').find('img').attr('src',img);
+           $('.image_li_'+{{pro.id}}).find('.main_img').find('img').attr('src',img);
+         }
+         {% endif %}
+         {% endfor %}
+       }
+       {% endfor %}
+     }, function(){
+       {% for pro in collection.products %}
+       var p = '{{ pro.id }}';
+       if(p == val){
+         {% for variant in pro.variants %}
+         var v = '{{ variant.id }}';
+         {% if variant.image %}
+         if(v == variant.id ){
+           var img = '{{ variant.image | img_url:"master" }}';
+           $('.product-image_'+{{pro.id}}).find('.main_img').find('img').attr('src',img);
+           $('.image_li_'+{{pro.id}}).find('.main_img').find('img').attr('src',img);
+          }
+         {% endif %}
+        {% endfor %}
+       }
+       {% endfor %}
+     }); 
+     /*  end hover and click both (combine above two code) */
+     
+                  
+      var form = jQuery('#' + selector.domIdPrefix).closest('form');
+
+     // BEGIN SWATCHES
+     if (variant) {
+       for (var i=0,length=variant.options.length; i<length; i++) {
+         var radioButton = form.find('.swatch[data-option-index="' + i + '"] :radio[value="' + variant.options[i] +'"]');
+         //          if (radioButton.size()) {
+         //            radioButton.get(0).checked = true;
+         //          }
+       }
+     }
+     // END SWATCHES
+     
+     /* start change image on select variant - simple code (see above code change on hover)==============================*/
+     //      if(variant && variant.featured_image){
+     //        var img_id = variant.featured_image.src;
+     //        form.parents('.product-item').find('.main_img').find('img').attr("src",img_id);
+     //      }
+     /* end change image on select variant - simple code (see above code change on hover)==============================*/
+     
+     /* start code for "link option with pick an option" */
+    var f = 0;
+    if(f == 0){
+      form.find('.swatch').each(function(index,val){
+        if($(val).find('input[type="radio"]:checked').length == 0){
+          if ( variant.compare_at_price > variant.price ) {
+            $(price).html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, "") +'</span>'+'&nbsp;<s class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, "")+ '</s>');
+          } else {
+            $(price).html('<span class="product-price">'+ Shopify.formatMoney(variant.price, "") + '</span>' );
+          }
+          $(btn).text("select "+$(val).data("value")+" option");
+          $(btn).addClass('disabled').attr('disabled','disabled').fadeTo(1,0.3); 
+          f+= 1;
+          return false;
+        }
+      });
+    }   
+    if(f > 0){
+      return false;
+    } 
+    else {
+      if (variant) {
+        if (variant.available) {
+          // Selected a valid variant that is available.
+          $(btn).removeClass('disabled').removeAttr('disabled').text('Add to Cart').fadeTo(200,1);
+        } else {
+          // Variant is sold out.
+          $(btn).text('Sold Out').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+        }
+        // Whether the variant is in stock or not, we can update the price and compare at price.
+        if ( variant.compare_at_price > variant.price ) {
+          $(price).html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, "") +'</span>'+'&nbsp;<s class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, "")+ '</s>');
+        } else {
+          $(price).html('<span class="product-price">'+ Shopify.formatMoney(variant.price, "") + '</span>' );
+        }
+      } else {
+        // variant doesn't exist.
+        $(btn).text('Unavailable').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+      }
+   }
+   /* end code for "link option with pick an option" */           
+     
+}
+   
+  /* start sort by code */
+  Shopify.queryParams = {};
+  if (location.search.length) {
+    for (var aKeyValue, i = 0, aCouples = location.search.substr(1).split('&'); i < aCouples.length; i++) {
+      aKeyValue = aCouples[i].split('=');
+      if (aKeyValue.length > 1) {
+        Shopify.queryParams[decodeURIComponent(aKeyValue[0])] = decodeURIComponent(aKeyValue[1]);
+      }
+    }
+  }
+  jQuery('.sort-by')
+  .val('{{ collection.sort_by | default: collection.default_sort_by | escape }}')
+       .bind('change', function() {
+    Shopify.queryParams.sort_by = jQuery(this).val();
+    location.search = jQuery.param(Shopify.queryParams).replace(/\+/g, '%20');
+  });
+  /* end sort by code */
+  
+  /* start Product Tag Filters */
+  /** start with refresh page filter code **/
+  /*var collFilters = jQuery('.coll-filter');
+  collFilters.change(function() {
+    var newTags = [];
+    var newURL = '';
+    delete Shopify.queryParams.page;
+    collFilters.each(function() { 
+      if (jQuery(this).val()) {
+        newTags.push(jQuery(this).val());
+      }
+    });
+    {% if collection.handle %}
+    newURL = '/collections/' + '{{ collection.handle }}';
+    if (newTags.length) {
+      newURL += '/' + newTags.join('+');
+    }
+    var search = jQuery.param(Shopify.queryParams);
+    if (search.length) {
+      newURL += '?' + search;
+    }
+    location.href = newURL;    
+    {% else %}
+    if (newTags.length) {
+      Shopify.queryParams.constraint = newTags.join('+');        
+    }
+    else {
+      delete Shopify.queryParams.constraint;
+    }
+    location.search = jQuery.param(Shopify.queryParams).replace(/\+/g, '%20');
+    {% endif %}      
+  });*/
+  /** end with refresh page filter code **/
+  /** start without refresh page filter code **/
+  $('body').on('change','select.coll-filter', function(e){
+    var collFilters = jQuery('.coll-filter');
+    var newTags = [];
+    var newURL = '';
+    delete Shopify.queryParams.page;
+    collFilters.each(function() { 
+      if (jQuery(this).val()) {
+        newTags.push(jQuery(this).val());
+        console.log("array = "+newTags);
+      }
+    });
+    {% if collection.handle %}
+    newURL = '/collections/' + '{{ collection.handle }}';
+    console.log("string_1 = "+newURL);
+    if (newTags.length) {
+      newURL += '/' + newTags.join('+');
+      console.log("string = "+newURL);
+    }
+    var search = jQuery.param(Shopify.queryParams);
+    console.log("search = "+search);
+    if (search.length) {
+      newURL += '?' + search;
+      console.log("serch_url = "+newURL);
+    }
+    {% else %}
+    if (newTags.length) {
+      Shopify.queryParams.constraint = newTags.join('+');     
+    }
+    else {
+      delete Shopify.queryParams.constraint;
+    }
+    {% endif %}      
+    $.get(newURL,function(data){
+      $('body').html(data);
+    });
+  });
+  /** end without refresh page filter code **/
+  /* end Product Tag Filters */
+
+
+  /* start category group */
+  $(function() {
+    var filters = $('.advanced-filter'),
+        el,
+        elGroup,
+        elHandle,
+        activeTagInGroup;
+    filters.on('click', function(e) {
+      el = $(this);
+      elGroup = el.data('group');
+      elHandle = el.data('handle');
+      activeTagInGroup = $('.active-filter[data-group="'+ elGroup +'"]');
+      // If the tag clicked is not already active and its group contains an active tag, we will swap tag within the group.
+      if ( !el.hasClass('active-filter')  && activeTagInGroup.size() ) {
+        e.preventDefault();
+        location.href = location.href
+        // swap tag
+        .replace(activeTagInGroup.data('handle'), elHandle)
+        // go back to page 1
+        .replace(/(&page=\d+)|(page=\d+&)|(\?page=\d+$)/, '');
+      }
+    });
+  });
+  /* end category group */
+  /* start less and more category display code  */
+  var each_list =  $('.filter-col').find('.list_read');
+  $.each(each_list,function(index,val){
+    var id= val.id;
+    $('#'+id+' li:lt(3)').show();
+    $('#'+id+' #read_less').hide();
+    var items = $('#'+id+" li").length;
+    var shown = 2;
+    $('#'+id+' #read_more').click(function(e) {
+      e.preventDefault();
+      $('#'+id+' #read_less').show();
+      shown = $('#'+id+' li:visible').size()+2;
+      $('#'+id+' li:lt('+shown+')').show();
+      if(shown >= items) {
+        $('#'+id+' #read_more').hide();
+      }
+    });
+    $('#'+id+' #read_less').click(function(e) {
+      e.preventDefault();
+      $('#'+id+' li').not(':lt(3)').hide();
+      $('#'+id+' #read_more').show();
+      $('#'+id+' #read_less').hide();
+    });
+  });
+  /* end less and more category display code  */
+  /* start click on checkbox button catregory group option change */
+  $('body').on("click",".list_read #eg-checkboxin",function(){
+    $('.list_read input').attr('checked');
+    window.location.assign($(this).parents('a').attr('href'));
+  });
+  /* end click on checkbox button catregory group option change */
+  
+   /* start display product click on load more button */
+       var total_items = $('.product-item').length;
+       $('.product-item:lt(4)').show();
+       var shown = 4;
+       if(shown >= total_items) {
+         $('.load-more').hide();
+       }
+       $('.load-more').click(function(e){
+         var total_items = $('.product-item').length;
+         shown = $('.product-item:visible').length+4;
+         $('.product-item:lt('+shown+')').show();
+         if(shown >= total_items) {
+           $('.load-more').hide();
+         }
+       });
+  /* end display product click on load more button */
+  
+  /* start add-to-cart using ajax not go(refresh) in cart page */
+  $('body').on('click', '.products .add_cart_btn', function(e){
+    e.preventDefault();
+    var link = $(this).closest('form');
+    $.ajax({
+      dataType: 'JSON',
+      type: 'post',
+      data: $(link).serialize(),
+      url: '/cart/add.js',
+      success: addItem
+    });
+    function addItem(){
+      var hh = $('.add_to_cart').attr('action').replace('/add', '')+'?view=mini';
+      $.get(hh, function(data){
+        $('.cart_pop').html(data);
+      });
+      $('.cart_popup').show();
+      $.getJSON('/cart.js', function(cart){
+        $('.ai-c .right-menu .cart_count').find('.item_count').text(cart.item_count);
+      });
+    }
+  });
+  /* end add-to-cart using ajax not go(refresh) in cart page */
+  
+  /* start quickview */
+  $('.quick_view_btn').on('click', function(e){
+    e.preventDefault();
+    var href = $(this).find('a').attr('href')+'?view=quickview';
+    $.get(href, function(data){
+      $('.quick_product_detail').html(data);
+    });
+    $('.overlay_quick').show();
+  });
+  /* end quickview */
+  
+  /*   start grid/list select   */
+  $('body').on('click', '.list_icon', function(e){
+    $('.grid_items').removeClass('list_item_flex').addClass('display_none');
+    $('.list_items').addClass('list_item_grid');
+    $('.grid_icon').removeClass('active_icon');
+    $(this).addClass('active_icon');
+    $('body').on('click', '.grid_icon', function(e){
+      $(this).removeClass('active_icon');
+      $('.grid_items').addClass('list_item_flex').removeClass('display_none');
+      $('.list_items').removeClass('list_item_grid');
+      $('.list_icon').removeClass('active_icon');
+      $(this).addClass('active_icon');
+    });
+  });
+  /*   end grid/list select   */
+  
+</script>
+
+{% schema %}
+  {
+    "name": "Filter Tag",
+    "settings": [
+		{
+			"type": "textarea",
+			"id": "teaxtarea_id",
+			"label": "Filter tag add"
+		}
+	]
+  }
+{% endschema %}

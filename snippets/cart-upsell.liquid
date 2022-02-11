@@ -1,0 +1,75 @@
+<!-- select any collection (write now collection-handle) -->
+<h4>Cart Upsell</h4>
+{% assign upsellCollection = 'gift-cards' %}
+<div class="c-upsell-main-div">
+  <div class="c-upsell js-upsell">
+    {% for collection in collections  %}
+    {% if collection.handle == upsellCollection %}
+    {% for product in collection.products limit:4 %}
+    <form></form>
+    <form action="/cart/add" class="c-upsell-form" method="post" id="{{ product.id }}">
+      <input type="hidden"  name="quantity" min="1" value="1" >
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      <div class="c-upsell__product js-product" data-product-id="{{ product.id}}">
+        <div class="c-upsell__productImage">
+          {% for image in product.images %}
+          <img  loading="lazy" class="c-upsell__innerImage" src="{{ image | img_url: '586x' }}" alt="Product Img" />
+          {% endfor %}
+        </div>
+        <p class="c-upsell__productTitle">{{ product.title }} </p>
+        <p class="c-upsell__productPrice"> {{ product.price | money }}</p>
+      </div>
+      <div class="c-upsell__atc js-atc" data-id="{{product.selected_or_first_available_variant.id}}">Add to Cart</div>
+    </form>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  $(document).ready(function(){
+    $(".c-upsell__productImage").slick({
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      fade: true
+    });
+
+    $('.c-upsell__atc').on('click', function(e){
+      e.preventDefault();
+      var href = $(this).closest('.c-upsell-form');
+      var c_id = $(this).attr('data-id');
+      $.ajax({
+        dataType: "json",
+        type: "post", 
+        data: $(href).serialize(),
+        url: '/cart/add.js'
+      }).done(function(data){
+        $.get('/cart?view=update_cart', function(data){
+          $('.cart_b').html(data);
+        });
+        $.getJSON('/cart.js', function(cart){
+          $('.cart_count').find('.item_count').text(cart.item_count);
+        });
+      });
+    });
+  });
+</script>
+
+<style>
+  .c-upsell__atc {
+    cursor: pointer;
+  }
+  .c-upsell-main-div{
+    margin: 20px;
+  }
+  .c-upsell.js-upsell{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .c-upsell__product.js-product {
+    width: 300px;
+    padding: 10px;
+  }
+</style>

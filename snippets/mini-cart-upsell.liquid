@@ -1,0 +1,95 @@
+<!-- select any collection (write now collection-handle) -->
+{% assign upsellCollection = 'gift-cards' %}
+<div class="c-upsell-main-div">
+  <div class="c-upsell js-upsell">
+    {% for collection in collections  %}
+    {% if collection.handle == upsellCollection %}
+    {% for product in collection.products limit: 4 %}
+    <form action="/cart/add" class="c-upsell-form c-upsell-form_{{product.selected_or_first_available_variant.id}}" method="post" id="{{ product.id }}">
+      <input type="hidden"  name="quantity" min="1" value="1" >
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      <div class="c-upsell__product js-product" data-product-id="{{ product.id}}">
+        <div class="c-upsell__productImage">
+          {% for image in product.images %}
+          <img  loading="lazy" class="c-upsell__innerImage" src="{{ image | img_url: '58x' }}" alt="Product Img" />
+          {% endfor %}
+        </div>
+        <p class="c-upsell__productTitle">{{ product.title | truncatewords: 1}} </p>
+      </div>
+      <div class="c-upsell__atc js-atc" data-id="{{product.selected_or_first_available_variant.id}}">Add to Cart</div>
+    </form>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  $(document).ready(function(){
+    $(".c-upsell__productImage").slick({
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      fade: true
+    });
+
+    $('.c-upsell__atc').on('click', function(e){
+      e.preventDefault();
+      var _this = $(this);
+      var href = $(this).closest('.c-upsell-form');
+      var p_id = $(this).attr('data-id');
+      var arr = [];
+      $.ajax({
+        dataType: "json",
+        type: "post", 
+        async: false,
+        data: $(href).serialize(),
+        url: '/cart/add.js'
+      }).done(function(data){
+        $.get('/cart?view=mini', function(data){
+          $('.cart_pop').html(data);
+        });
+      }).complete(function(cart){
+        $.getJSON('/cart.js', function(cart){
+          for(var i in cart.items){
+            arr.push(cart.items[i].id);
+          }
+          p_id = parseInt(p_id);
+          if(jQuery.inArray(p_id ,arr) != -1){
+            if(p_id == _this.data('id')){
+              $('.c-upsell__atc').closest('.c-upsell-form').addClass('remove_form');
+            }
+          }
+          $('.cart_count').find('.item_count').text(cart.item_count);
+        });
+      });
+    });
+    
+  });
+</script>
+
+<style>
+  .upsell_mini_cart_main{
+    background-color: #e8d2b0;
+    padding: 20px;
+  }
+  .c-upsell__atc {
+    cursor: pointer;
+  }
+  .c-upsell-main-div{
+    margin: 20px;
+  }
+  .c-upsell.js-upsell{
+    display: flex;
+    justify-content: center;
+  }
+  .c-upsell__product.js-product {
+    width: 100px;
+    padding: 10px;
+  }
+  img.c-upsell__innerImage.slick-slide.slick-current.slick-active{
+    width: 100px;
+  }
+  .remove_form{
+    display: none !important;
+  }
+</style>

@@ -1,0 +1,80 @@
+{% form 'contact', class: 'contact_form' %}
+{{ form.errors | default_errors }}
+{% if form.posted_successfully? %}
+<p class="form-success">Form Submitted</p>
+{% endif %}
+<div class="oasis_add_new">
+  <div class="input-wrapper input-row row_contact jc-sb">
+    <div class="name-input col-6 col-m-6"><label for="Name">Name <span class="error">*</span></label>
+      <input type="text"  name="contact[name]" id="Name"></div>
+    <div class="phone-input col-6 col-m-6"><label for="Phone">Phone</label>
+      <input type="text" name="contact[phone]" id="Phone"></div>
+  </div>
+  <div class="input-wrapper col-6 col-m-6">
+    <label for="Email">E-mail <span class="error">*</span></label>
+    <input type="text" name="contact[email]" id="Email">
+  </div>
+  <div class="input-wrapper col-6 col-m-6">
+    <label for="Message">Message <span class="error">*</span></label>
+    <textarea name="contact[body]" id="Message"></textarea>
+  </div>
+  <div class="input-wrapper col-6 col-m-6 ">
+    <input type="submit" value="Send" class="btn-red contact_send submit_con">
+  </div>
+</div>
+{% endform %}
+
+
+<script>
+  $('body').on('click','.contact_send', function(e){
+    var form = $(this).closest('.contact_form');
+    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    var x = true;
+    form.find('.err-msg').remove();
+
+    var name = form.find('#Name');
+    var msg = form.find('#Message');
+    var email = form.find('#Email');
+    var phone = form.find('#Phone');
+
+
+    if(name.val().trim() == ''){
+      var message = "This is a required field.";
+      name.parent().append('<p class="err-msg">'+message+'</p>');
+      x = false;
+    } else {
+      name.parent().find('.err-msg').remove();
+    }
+
+
+    if(msg.val().trim() == ''){
+      var message = "This is a required field.";
+      msg.parent().append('<p class="err-msg">'+message+'</p>');
+      x = false;
+    } else {
+      msg.parent().find('.err-msg').remove();
+    }
+
+    if(email.val().trim() == '' || !regex.test(email.val())) {
+      var message = "Please enter valid email.";
+      if(email.val() == ''){
+        message = "This is a required field.";
+      }
+      email.parent().append('<p class="err-msg">'+message+'</p>');
+      x = false;
+      e.preventDefault();
+    } else {
+      email.parent().find('.err-msg').remove();
+    }
+    if(x==false) {
+      return false;
+    }
+  });
+</script>
+
+
+
+
+
+
+

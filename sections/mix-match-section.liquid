@@ -1,0 +1,130 @@
+<section class="mix-match-section uniq_mix_class" data-section="mix-match-section">
+  <div class="mix-match-container">
+    <div class="mix-match-row">
+      <div class="mix-match-conten--col">
+        <div class="mix-match-content">
+          <h2>
+            {% if product.metafields.mix-match-title.mix-title != blank %}
+            <span class="migra-italic">{{product.metafields.mix-match-title.mix-title}}</span>
+            {% endif %}
+            {% if product.metafields.mix-match-sub-title.mix-sub-title != blank %}
+            <span class="migra">{{product.metafields.mix-match-sub-title.mix-sub-title}}</span>
+            {% endif %}
+          </h2>
+          <div class="new_add_desc">
+            {% for i in (0..4) %}
+            {% if product.metafields.mix-match-content.mix-content[i] != blank %}
+            <div class="desk-cont-only add_doc ned_add_{{forloop.index0}}" style="{%if forloop.index0 == 0 %}display: block;{% else %}display: none;{% endif %}">
+            {{product.metafields.mix-match-content.mix-content[i]}}
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+          
+          {% assign psize = product.metafields.product-select.pro-select.size %}
+          <div class="mix-match-pro-listing desktop-only">
+            {% if psize > 0 %}
+            {% for i in (0..4) %}
+            {% assign pro = product.metafields.product-select.pro-select[i] %}
+            {% assign metaproduct = all_products[pro] %}
+            {% if metaproduct != blank or product.metafields.sel-image.sel-img[i] != blank %}
+            <div class="sli-item">
+              <div class="mix-match-product">
+                {% if product.metafields.sel-image.sel-img[i] != blank %}
+                <img loading="lazy" src="{{ product.metafields.sel-image.sel-img[i] }}" alt="{{ metaproduct.title }}" data-block_id="{{ metaproduct.id }}{{forloop.index}}" data-index='{{ forloop.index0 }}'>
+                {% elsif metaproduct.featured_media != blank %}
+                <img loading="lazy" src="{{ metaproduct.featured_media | img_url: 'master' }}" alt="{{ metaproduct.title }}" data-block_id="{{ metaproduct.id }}{{forloop.index}}" data-index='{{ forloop.index0 }}'>
+                {% endif %}
+                <div class="mix-match-pro-title">
+                  <h3>
+                    {% if product.metafields.product-title.pro-title[i] != blank %}
+                    {{ product.metafields.product-title.pro-title[i] }}
+                    {% else %}
+                    {{ metaproduct.title }}
+                    {% endif %} 
+                  </h3>
+                  <span class="price">{{ metaproduct.price | money_without_trailing_zeros }}</span>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="mix-match-shoue--col">
+        {% assign psize = product.metafields.product-select.pro-select.size %}
+        <div class="mix-match-shoue cSlider--single">
+          {% if psize > 0 %}
+          {% for i in (0..4) %}
+          {% assign pro = product.metafields.product-select.pro-select[i] %}
+          {% assign metaproduct = all_products[pro] %}
+          {% if metaproduct != blank or product.metafields.sel-image.sel-img[i] != blank %}
+          <div class="mix-match-item {{ metaproduct.id }}">
+            {% if product.metafields.main-sel-img.main-img[i] != blank %}
+            	<img  loading="lazy" src="{{ product.metafields.main-sel-img.main-img[i] }}" alt="{{ metaproduct.title }}" >
+            {% elsif metaproduct.featured_media != blank %}
+            	<img  loading="lazy" src="{{ metaproduct.featured_media | img_url: 'master' }}" alt="{{ metaproduct.title }}">
+            {% endif %}
+          </div>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+        </div>
+        
+        {% assign psize = product.metafields.product-select.pro-select.size %}
+        <div class="mix-match-pro-listing cSlider--nav mobile-only">
+          {% if psize > 0 %}
+          {% for i in (0..4) %}
+          {% assign pro = product.metafields.product-select.pro-select[i] %}
+          {% assign metaproduct = all_products[pro] %}
+          {% if metaproduct != blank or product.metafields.sel-image.sel-img[i] != blank %}
+          <div class="sli-item">
+            <div class="mix-match-product">
+              {% if product.metafields.sel-image.sel-img[i] != blank %}
+              <img  loading="lazy" src="{{ product.metafields.sel-image.sel-img[i] }}" alt="{{ metaproduct.title }}" data-block_id="{{ metaproduct.id }}{{forloop.index}}" data-index='{{ forloop.index0 }}'>
+              {% elsif metaproduct.featured_media != blank %}
+              <img  loading="lazy" src="{{ metaproduct.featured_media | img_url: 'master' }}" alt="{{ metaproduct.title }}" data-block_id="{{ metaproduct.id }}{{forloop.index}}" data-index='{{ forloop.index0 }}'>
+              {% endif %}
+              <div class="mix-match-pro-title">
+                <h3>
+                  {% if product.metafields.product-title.pro-title[i] != blank %}
+                  {{ product.metafields.product-title.pro-title[i] }}
+                  {% else %}
+                  {{ metaproduct.title }}
+                  {% endif %}  
+                </h3>
+                <span class="price">{{ metaproduct.price | money_without_trailing_zeros }}</span>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  .desk-cont-only{
+    display: block;
+  }
+</style>
+{% schema %}
+  {
+    "name": "Mix-match Section",
+    "settings": [
+	  	
+	],
+	"blocks": [
+	 ],
+	"presets": [
+    {
+      "category": "Content",
+      "name": "Mix-match Home-page"
+    }
+  ]
+  }
+{% endschema %}

@@ -1,0 +1,82 @@
+<section class="hero-section" data-section="main_slider">
+  <div class="hero-slider slickSlider" >
+    <div class="hero-slide">
+      <div class="hero-image dataBg" {% if section.settings.image != blank %}data-bg-src="{{ section.settings.image | img_url: "master" }}"{% endif %}></div>
+      <div class="hero-content">
+        <div class="hero-content-cover text-center">
+          {% if section.settings.image1 != blank %}
+          <div class="landing-logo" data-hide-time="2">
+            <img loading="lazy"  src="{{ section.settings.image1 | img_url: "master" }}" alt="Oasis">
+          </div>
+          {% endif %}
+          {% if section.settings.text != blank %}
+          <h1>{{ section.settings.text }}</h1>
+          {% endif %}
+        </div>    
+      </div>
+    </div>
+    {% assign size = section.blocks | size %}
+    {% if size > 0 %}
+    {% for block in section.blocks %}
+    {% if block.settings.image != blank %}
+    <div class="hero-slide">
+      <div class="hero-image dataBg" data-bg-src="{{ block.settings.image | img_url: "master" }}"></div>
+      <div class="hero-content text-center">
+        {% if block.settings.text != blank %}
+        <div class="hero-content-cover">
+          <h2 class="h1">{{ block.settings.text }}</h2>
+        </div>  
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+  </div>
+</section>
+{% schema %}
+  {
+    "name": "Image With Text",
+    "settings": [
+		{
+			"type": "image_picker",
+			"id": "image",
+			"label": "Select Image"
+		},
+		{
+			"type": "image_picker",
+			"id": "image1",
+			"label": "Select Image"
+		},
+		{
+			"type": "text",
+			"id": "text",
+			"label": "Image with Text"
+		}	
+	],
+	"blocks": [
+		{
+			"type" : "image_with_text",
+			"name": "image_with_text",
+			"settings": [
+				{
+					"type": "image_picker",
+					"id": "image",
+					"label": "Select Image"
+				},
+				{
+					"type": "text",
+					"id": "text",
+					"label": "Image with Text"
+				}	
+			]
+		}
+	],
+	"presets": [
+		{
+          "name": "Image Main Slider",
+          "category": "Image Main Slider"
+		}
+	]
+  }
+{% endschema %}

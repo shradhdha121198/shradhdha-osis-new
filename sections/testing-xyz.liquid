@@ -1,0 +1,369 @@
+<!-- ////////////////////////////////////  Lust Upsell Mini cart ////////////////////////////////  -->
+
+
+<script id="CartTemplate" type="text/template">
+{% raw %}
+  <div class="drawer__scrollable">
+    {{#items}}
+    <div class="ajaxcart__product appear-animation appear-delay-{{animationRow}}">
+      <div class="ajaxcart__row">
+        <div class="grid">
+          <div class="grid__item one-third">
+            <a href="{{url}}" class="ajaxcart__product-image free_{{ id }}_a"><img src="{{img}}" alt="{{name}}"></a>
+          </div>
+          <div class="grid__item two-thirds">
+            <div class="ajaxcart__product-name--wrapper">
+              <a href="{{url}}" class="ajaxcart__product-name free_{{ id }}_a">{{{name}}}</a>
+              {{#if variation}}
+                <div class="ajaxcart__product-meta">{{variation}}</div>
+              {{/if}}
+              {{#if selling_plan_name}}
+                <div class="ajaxcart__product-meta">{{selling_plan_name}}</div>
+              {{/if}}
+              {{#properties}}
+                {{#each this}}
+                  {{#if this}}
+                    <span class="ajaxcart__product-meta">{{@key}}: {{this}}</span>
+                  {{/if}}
+                {{/each}}
+              {{/properties}}
+            </div>
+            {% endraw %}
+            
+            {% raw %}
+            <div class="grid grid--full display-table free_{{ id }}">
+              <div class="grid__item display-table-cell one-half">
+                <label for="updates_{{key}}" class="visually-hidden">{% endraw %}{{ 'products.product.quantity' | t }}{% raw %}</label>
+                <div class="js-qty__wrapper">
+                  <input type="text" id="updates_{{key}}"
+                    class="js-qty__num"
+                    value="{{itemQty}}"
+                    data-id="{{key}}"
+                    min="0"
+                    aria-label="quantity"
+                    pattern="[0-9]*"
+                    name="updates[]">
+                  <button type="button"
+                    class="js-qty__adjust js-qty__adjust--minus"
+                    aria-label="{% endraw %}{{ 'cart.general.reduce_quantity' | t }}{% raw %}">
+                      {% endraw %}<svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-minus" viewBox="0 0 20 20"><path fill="#444" d="M17.543 11.029H2.1A1.032 1.032 0 0 1 1.071 10c0-.566.463-1.029 1.029-1.029h15.443c.566 0 1.029.463 1.029 1.029 0 .566-.463 1.029-1.029 1.029z"/></svg>{% raw %}
+                      <span class="icon__fallback-text" aria-hidden="true">&minus;</span>
+                  </button>
+                  <button type="button"
+                    class="js-qty__adjust js-qty__adjust--plus"
+                    aria-label="{% endraw %}{{ 'cart.general.increase_quantity' | t }}{% raw %}">
+                      {% endraw %}<svg aria-hidden="true" focusable="false" role="presentation" class="icon icon-plus" viewBox="0 0 20 20"><path fill="#444" d="M17.409 8.929h-6.695V2.258c0-.566-.506-1.029-1.071-1.029s-1.071.463-1.071 1.029v6.671H1.967C1.401 8.929.938 9.435.938 10s.463 1.071 1.029 1.071h6.605V17.7c0 .566.506 1.029 1.071 1.029s1.071-.463 1.071-1.029v-6.629h6.695c.566 0 1.029-.506 1.029-1.071s-.463-1.071-1.029-1.071z"/></svg>{% raw %}
+                      <span class="icon__fallback-text" aria-hidden="true">+</span>
+                  </button>
+                </div>
+              </div>
+              <div class="grid__item display-table-cell one-half text-right">
+                {{#if discountsApplied}}
+                  <small class="cart__price--strikethrough">{{{price}}}</small>
+                  <span class="ajaxcart__price">
+                    {{{discountedPrice}}}
+                  </span>
+                {{else}}
+                  <span class="ajaxcart__price">
+                    {{{price}}}
+                  </span>
+                {{/if}}
+              </div>
+            </div>
+            <div class="grid grid--full display-table">
+              {{#if discountsApplied}}
+                <div class="grid__item text-right">
+                  {{#each discounts}}
+                    <small class="ajaxcart__discount cart__discount">
+                      {{this.discount_application.title}} (-{{{this.formattedAmount}}})
+                    </small>
+                  {{/each}}
+                </div>
+              {{/if}}
+
+              {{#if unitBase}}
+                <div class="grid__item text-right">
+                  <div class="product__unit-price">
+                    {{{ unitPrice }}}/{{{ unitBase }}}
+                  </div>
+                </div>
+              {{/if}}
+            </div>
+            {% endraw %}
+            {% raw %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/items}}{% endraw %}
+    
+{% if settings.upsell_1 %}
+    {% for i in (1..5) %}
+      {% capture upsell_pro %}upsell_pro_{{i}}{% endcapture %}
+      {% capture cart_price %}cart_price_{{i}}{% endcapture %}
+      {% if settings[upsell_pro] != blank and settings[cart_price] != blank %}
+        {% assign up_pro = all_products[settings[upsell_pro]] %}
+        
+          {% assign all_variant = "" %}
+          {% for variant in up_pro.variants %}
+          {% capture all_variant %}{% if all_variant != blank %}{{ all_variant }}|{% endif %}{{ variant.title }}{% endcapture %}
+          {% endfor %}
+          <div class="upsell p_{{ up_pro.id }} upsell_product hide_upsell" data-all_variant="{{ all_variant | split:'|' | join:',' }}">
+            <div class="inside">
+             {% if up_pro.featured_image %}
+              <a class="image" href="{{ up_pro.url }}" >
+	              <img src="{{ up_pro.featured_image | img_url:'master' }}" alt="{{ up_pro.featured_image.alt }}">
+              </a>
+              {% endif %}
+              <div class="title">
+                <a href="{{ up_pro.url }}">
+                  <div class="name">{{ up_pro.title }}</div>
+                  <div class="price-c ">
+                    <span class="money">{{ up_pro.selected_or_first_available_variant.price | money }}</span>
+                  </div>
+                </a>
+                {% unless up_pro.has_only_default_variant %}
+                <div class="upsell_variant_wrapper"> 
+                  {%- for option in up_pro.options_with_values -%}
+                        {%- liquid
+                    if settings.product_color_swatches
+                      assign is_color = false
+                      assign color_option_index = 0
+                      assign swatch_trigger = 'products.general.color_swatch_trigger' | t | downcase
+                      assign color_option_index = forloop.index0
+                      assign downcased_option = option.name | downcase
+                      if downcased_option contains swatch_trigger
+                        assign is_color = true
+                      elsif swatch_trigger == 'color' and downcased_option contains 'colour' or downcased_option contains 'Shade' or downcased_option contains 'shade'
+                        assign is_color = true
+                      endif
+                    endif
+                  -%}
+
+                  {% capture section_id %}section_id{{ up_pro.id }}{% endcapture %}
+                  {%- render 'variant-button',
+                      section_id: section_id,
+                      product: up_pro,
+                        option: option,
+                        forloop: forloop,
+                        is_color: is_color,
+                        color_option_index: color_option_index
+                        -%}
+                  {%- endfor -%}
+                </div>
+              	{% endunless %}
+                <select hidden class="upsell_product_id">
+                  {%- for variant in up_pro.variants -%}
+                  <option {% if variant == up_pro.selected_or_first_available_variant %}
+                          selected="selected"{% endif %}
+                          value="{{ variant.id }}"
+                           data-value="{{ variant.title }}" >
+                    {{ variant.title }} - {{ variant.price | money_with_currency }}
+                  </option>
+                  {%- endfor -%}
+                </select>
+              </div>
+              <div class="quick-buy">
+                <a href="#" class="add add_upsell" data-add_upsell_id="{{ up_pro.selected_or_first_available_variant.id }}"> ADD</a>
+              </div>
+            </div>
+          </div>
+       
+    {% endif %}
+   {% endfor %}
+{% endif %}
+   
+{% assign cnt = 0 %}
+{% for i in (0..4) %}
+	{% capture upsell_pro %}upsell_1_pro_{{i}}{% endcapture %}
+    {% assign up_pro = all_products[settings[upsell_pro]] %}
+     {% if up_pro != blank and up_pro.available %}
+     {%- unless up_pro.has_only_default_variant -%}
+     {% assign cnt = cnt | plus: 1 %}
+     {%- endunless -%}
+          {% endif %}
+{% endfor %}
+{% capture upsell %}
+{% for i in (0..4) %}
+	{% capture upsell_pro %}upsell_1_pro_{{i}}{% endcapture %}
+    {% assign up_pro = all_products[settings[upsell_pro]] %}
+     {% if up_pro != blank and up_pro.available %}
+     <div data-class="upsell_{{ up_pro.id }}" data-addtocart_id="{{ up_pro.selected_or_first_available_variant.id }}" data-title="{{ up_pro.title }}" data-price="{{ up_pro.selected_or_first_available_variant.price | money }}" class="{% if i == 1 %}active{% endif %}  pro_up">
+     	<img src="{{ up_pro.featured_image | img_url:'master' }}">
+     </div>
+     {% if first_up_pro == blank %}
+     {% assign first_up_pro = up_pro %}
+     {% endif %}
+     {% endif %}
+{% endfor %}
+{% endcapture %}
+{% if settings.upsell_1_enable != blank and upsell != blank %}
+   <div class="upsell-block">
+            
+    <div class="up-pro-wrap active" >
+        {% if settings.upsell_title != blank %}
+        <h4>{{ settings.upsell_title }}</h4>
+        {% endif %}
+        <div class="add">
+            <p class="c-name up_pro_price_title">{{ first_up_pro.title }}<span>{{ first_up_pro.selected_or_first_available_variant.price | money }}</span></p>
+            <a class="addbtn addbtn_upsell" href="#" data-addtocart_id="{{ first_up_pro.selected_or_first_available_variant.id  }}">
+            ADD
+          	<?xml version="1.0" ?><!DOCTYPE svg  PUBLIC '-//W3C//DTD SVG 1.1//EN'  'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'><svg enable-background="new 0 0 50 50" height="50px" id="Layer_1" version="1.1" viewBox="0 0 50 50" width="50px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><rect fill="none" height="50" width="50"/><line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="4" x1="9" x2="41" y1="25" y2="25"/><line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="4" x1="25" x2="25" y1="9" y2="41"/></svg>
+            </a>
+        </div>
+        <div class="up-pro">
+           {{ upsell }} 
+        </div>
+        {% for i in (0..4) %}
+        {% capture upsell_pro %}upsell_1_pro_{{i}}{% endcapture %}
+    	{% assign up_pro = all_products[settings[upsell_pro]] %}
+     	{% if up_pro != blank and up_pro.available %}
+        <div class="upsell-porduct-variant upsell_{{ up_pro.id }} {% if i == 1 %}active{% endif %}">
+           {%- unless up_pro.has_only_default_variant -%}
+            {%- for option in up_pro.options_with_values -%}
+              {%- liquid
+                if settings.product_color_swatches
+                  assign is_color = false
+                  assign color_option_index = 0
+                  assign swatch_trigger = 'products.general.color_swatch_trigger' | t | downcase
+                  assign color_option_index = forloop.index0
+                  assign downcased_option = option.name | downcase
+                  if downcased_option contains swatch_trigger
+                    assign is_color = true
+                  elsif swatch_trigger == 'color' and downcased_option contains 'colour'
+                    assign is_color = true
+                  endif
+                endif
+              -%}
+
+                {%- render 'variant-button',
+                  section_id: 7169553744444,
+                  upsell: true,
+                  product: up_pro,
+                  option: option,
+                  forloop: forloop,
+                  is_color: is_color,
+                  color_option_index: color_option_index
+                -%}
+            {%- endfor -%}
+          {%- endunless -%}
+                <select hidden class="upsell_product_id">
+                  {%- for variant in up_pro.variants -%}
+                  <option {% if variant == up_pro.selected_or_first_available_variant %}
+                          selected="selected"{% endif %}
+                          value="{{ variant.id }}"
+                           data-value="{{ variant.title }}" >
+                    {{ variant.title }} - {{ variant.price | money_with_currency }}
+                  </option>
+                  {%- endfor -%}
+                </select>
+           </div>
+        {% endif %}
+        {% endfor %}
+  </select>
+    </div>
+  </div>
+{% endif %}
+
+
+            
+    
+   
+  
+  {% raw %}
+   {% endraw %}{% if settings.cart_notes_enable %}{% raw %}
+      <div class="appear-animation appear-delay-{{lastAnimationRow}}">
+        <label for="CartSpecialInstructions" class="ajaxcart__note">{% endraw %}{{ 'cart.general.note' | t }}{% raw %}</label>
+        <textarea name="note" class="input-full cart-notes" id="CartSpecialInstructions">{{note}}</textarea>
+      </div>
+    {% endraw %}{% endif %}{% raw %}
+  </div>
+  <div class="drawer__footer appear-animation appear-delay-{{lastAnimationRow}}">
+    {{#if cartDiscounts }}
+      <div class="grid grid--full">
+        <div class="grid__item one-half">
+          <p class="ajaxcart__subtotal">{% endraw %}{{ 'cart.general.discounts' | t }}{% raw %}</p>
+        </div>
+        <div class="grid__item one-half text-right">
+          {{#each cartDiscounts}}
+            <p class="ajaxcart__price cart__discount">
+              {{this.title}} (-{{{this.formattedAmount}}})
+            </p>
+          {{/each}}
+        </div>
+      </div>
+    {{/if}}
+    <div class="grid grid--full">
+      <div class="grid__item one-half">
+        <p class="ajaxcart__subtotal">{% endraw %}{{ 'cart.general.subtotal' | t }}{% raw %}</p>
+      </div>
+      <div class="grid__item one-half text-right">
+        <p class="ajaxcart__price total_price" data-total_price="{{{totalPrice}}}">{{{totalPrice}}}</p>
+      </div>
+    </div>
+    <p class="ajaxcart__note">
+      {% endraw %}{{ 'cart.general.shipping_at_checkout' | t }}{% raw %}
+    </p>
+    {% endraw %}{% if settings.cart_terms_conditions_enable %}
+      <p class="ajaxcart__note ajaxcart__note--terms">
+        <input type="checkbox" id="CartAgree" />
+        <label for="CartAgree">
+          {% if settings.cart_terms_conditions_link != blank %}
+            {{ 'cart.general.terms_html' | t: url: settings.cart_terms_conditions_link }}
+          {% else %}
+            {{ 'cart.general.terms' | t }}
+          {% endif %}
+        </label>
+      </p>
+    {% endif %}{% raw %}
+    {% endraw %}
+      {% if additional_checkout_buttons and settings.cart_additional_buttons %}
+        <div class="additional-checkout-buttons additional-checkout-buttons--vertical">{{ content_for_additional_checkout_buttons }}</div>
+      {% endif %}
+    {% raw %}
+    <button type="submit" class="btn btn--full cart__checkout{% endraw %}{% if settings.cart_terms_conditions_enable %}{% raw %} cart__checkout--ajax{% endraw %}{% endif %}{% raw %}" name="checkout">
+      {% endraw %}{{ 'cart.general.checkout' | t }}{% raw %}
+    </button>
+  </div>
+{% endraw %}
+</script>
+
+
+
+<script>
+  /* upsell js*/                   
+    $('body').on('change',".upsell_product .color_swatches",function(e){
+      var _this = $(this);
+      var upsell = _this.closest('.upsell_product');
+      var all_variants = upsell.data('all_variant').split(','); 
+      var value =  _this.val();
+      var vals = [];
+      $('body').find(upsell).find('.variant_label').text(value);
+      $('body').find(upsell).find('.color_swatches:checked').each(function(index,val){
+        vals.push($(val).val());
+      });
+      vals= vals.join(" / ");
+      if(all_variants.indexOf(vals) != -1){
+        var v = $('body').find(upsell).find('.upsell_product_id').find('option[data-value="'+vals+'"]').val();
+        $('body').find(upsell).find('.upsell_product_id').val(v);
+        $('body').find(upsell).find('.add_upsell').attr("data-add_upsell_id",$('body').find(upsell).find('.upsell_product_id').val());
+      }
+    });
+
+
+    $('body').on('click','.add_upsell',function(e){
+      e.preventDefault();
+      $.ajax({
+        "type":"POST",
+        "dataType":"json",
+        "url":"/cart/add",
+        "data":{"id": $(this).data('add_upsell_id'), "quantity": 1 },
+        "async":false,
+        "success":function(){
+          $(this).parents('.upsell_product').addClass('hide_upsell');
+          success_add_cart();
+        }
+      });
+    });
+  /* end upsell js*/
+</script>

@@ -1,0 +1,149 @@
+{% assign product = all_products[section.settings.donat_product] %}
+{% if product != blank %}
+  {% assign all_ids = '' %}
+  {% for item in cart.items %}
+  	{% capture all_ids %}{% if all_ids != blank %}{{ all_ids }}|{% endif %}{{ item.id }}{% endcapture %}
+  {% endfor %}
+  {% assign all_ids = all_ids | split:'|' | join:',' %}
+  <div class="cart-content">
+    <div class="row">
+      <div class="col-left half">
+        <div class="cart-left-col">
+          <h3>OPTIONAL DONATION: </h3>
+          <div class="coupon-content-col donation_div" >
+
+            <ul>
+              {% for option in product.options %}
+              {% if option == 'price' %}
+                {%- assign index = forloop.index0 -%}
+                {%- assign donationlist = '' -%}
+                {%- assign donation = '' -%}
+                {% assign all_variants = '' %}
+                {%- for variant in product.variants -%}
+                  {% capture all_variants %}{% if all_variants != blank %}{{ all_variants }}|{% endif %}{{ variant.id }}{% endcapture %}
+                  {%- capture donation -%}{{ variant.options[index] }}{%- endcapture -%}
+                  {%- unless donationlist contains donation -%}
+                  {%- assign text = donation | handleize -%}
+                  <li>
+                    <input type="radio" id="donate{{ forloop.index }}" name="radio-group" class="donation_change {% if all_ids contains variant.id %} active{% endif %}" value="{{ variant.id }}" data-price="{{ variant.price | money_without_currency }}" hidden/>
+                    <label for="donate{{ forloop.index }}">{{ text | prepend: 'Rs.' }}</label>
+                  </li>
+                  {%- capture tempList -%}{{ donationlist | append: donation | append: '|' }}{%- endcapture -%}
+                  {%- assign donationlist = tempList -%}
+                  {%- endunless -%}
+                {%- endfor -%}
+              {% endif %}
+              {% endfor %}
+              <input type="hidden" value="{{ all_variants }}" class="all_variants">
+            </ul>
+
+          </div>
+        </div>
+      </div> 
+    </div>
+  </div>
+  <style>
+    .donation_div ul {
+      list-style-type: none;
+      display: flex;
+      flex-wrap: wrap;
+      padding: 0;
+    }
+    .donation_div li {
+      margin: 5px;
+    }
+     .donation_div input[name='radio-group'].active + label {
+      color: #fff;
+      background: #d4b978;
+      padding: 5px 10px;
+    }
+    .donation_div label {
+      color: #fff;
+      background: #7ca7ad;
+      padding: 5px 10px;
+    }
+  </style>
+  <script>
+    $(document).ready(function(){
+      var money_formate =  '{{ shop.money_format }}';
+
+      function success(e){
+        $.getJSON('/cart.js', function(c){
+          if($('.cart-section').hasClass("empty_cart")){
+            $('.cart-section').removeClass("empty_cart");
+            $('.cart-section').addClass("full_cart");
+          }
+          var href='/cart?view=update_cart';
+          $.get(href,function(data){
+            $('.cart_b').html(data);        	
+          });
+        });
+      }
+
+      function product_add(val){
+        $.ajax({
+          type: "POST",
+          dataType: "json",
+          data: "id="+val+"&quantity=1",
+          url: "/cart/add.js",
+          async: false
+        }).done(function(data){
+          success();
+        }); 
+      }
+
+      function remove_item(id){
+        $.ajax({
+          type: "post",
+          dataType: 'json',
+          data:'updates['+id+']=0',
+          url:'/cart/update.js',
+          async: false
+        }).done(function(){
+          success();
+        });
+      }                  
+
+      $('body').on('change, click',".donation_change",function(e){
+        var change = $(this);
+        var val = change.val();
+        if($(this).hasClass('active')){
+          change.removeClass('active');
+          remove_item(val);
+        }else{
+          $('.donation_change').removeClass('active');
+          change.addClass('active');
+          var all_ids = change.parents('.donation_div').find('.all_variants').val();
+          $.getJSON('/cart.json',function(cart){
+            for(var i in cart.items){
+              if(all_ids.indexOf(cart.items[i].id) != -1){
+                remove_item(cart.items[i].id);
+                break;
+              }
+            }
+          }).done(function(){
+            if(parseFloat(change.data('price')) > 0){
+              product_add(val);
+            }else{
+              remove_item(val);
+            }
+          });
+        }
+      });
+    });
+  </script>
+{% endif %}
+ 
+ {% schema %}
+  {
+    "name": "Cart Page Donation",
+    "settings": [
+		{
+			"type": "product",
+			"id": "donat_product",
+			"label": "Select One Product"
+		}
+	]
+  }
+{% endschema %}
+

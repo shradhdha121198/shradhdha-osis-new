@@ -1,0 +1,102 @@
+<!-- forloop and assign first that important write this  -->
+
+<div class="main-wrapper" style="margin-top: 222px;">
+  {% if section.settings.banner_img != blank  %}
+  <section class="faq-banner inner-banner section-{{ section.id }}" style="background-image: url({{ section.settings.banner_img | img_url:'master' }});">
+    <div class="container text-center">
+      <h1 class="banner-title">{% if section.settings.title != blank %}{{ section.settings.title }}{% else %}{{ page.title }}{% endif %}</h1>
+    </div>
+    <style>
+      {% if section.settings.bg_mob_img != blank %}
+      @media only screen and (max-width: 767px) {
+        .faq-banner.section-{{ section.id }}{
+          background-image: url({{ section.settings.bg_mob_img | img_url:'master' }}) !important;
+        }
+      }
+      {% endif %}
+    </style>
+  </section>
+  {% endif %}
+  {% include 'breadcrumb' %}
+  <section class="faq-page-wrapper pt-80 pb-80">
+    <div class="container">
+      {% if section.settings.heading != blank or section.settings.desc != blank or page.content != blank or page.title != blank %}
+      <div class="section-title text-center">
+        <h2 class="first-letter">{% if section.settings.heading != blank %}{{ section.settings.heading }}{% else %}{{ page.title }}{% endif %}</h2>
+        {% if section.settings.desc != blank %}{{section.settings.desc}}{% else %}{{ page.content }}{% endif %}
+      </div>
+      {% endif %}
+      {% if section.blocks.size > 0 %}
+      {% assign first = 0 %}
+      <div class="accordion-container">
+        {% for block in section.blocks %}
+        {% if block.settings.que != blank and block.settings.ans != blank %}
+        {% assign first = first | plus: 1 %}
+        <div class="set">
+          <h3 {% if first == 1 %}class="active"{% endif %}>
+            <span>{{ block.settings.que }}</span>
+          </h3>
+          <div class="content" {% if first == 1 %}style="display: block;"{% endif %}>
+            {{ block.settings.ans }}
+          </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "FAQs",
+  "settings": [
+    {
+      "type":"image_picker",
+      "id":"banner_img",
+      "label":"Banner Image"
+    },
+	{
+      "type":"image_picker",
+      "id":"bg_mob_img",
+      "label":"Banner Mobile Image"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Page Title"	
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "richtext",
+      "id": "desc",
+      "label": "Content"
+    }
+  ],
+  "blocks": [
+    {
+    "name": "Question/Answer",
+    "type": "faq_que_ans",
+    "settings": [
+        {
+          "type": "text",
+          "id": "que",
+          "label": "Question"
+        },
+        {
+          "type": "richtext",
+          "id": "ans",
+          "label": "Answer"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+

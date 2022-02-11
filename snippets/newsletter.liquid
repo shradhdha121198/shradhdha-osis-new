@@ -1,0 +1,152 @@
+{% assign form = section.settings.newsletter_option %}
+{% case form %}
+{% when 'mailchimp' %}
+{%- assign formId = 'ContactForm_footer' -%}
+<form action="{{ section.settings.action_url }}" id="{{ formId }}" method="get" name="mc-embedded-subscribe-form" class="newsletter_form footer-subscribe" target="_blank" novalidate>   
+  <div class="matiral-input-box">
+    <input type="email"  id="subscribe_input_footer" name="EMAIL" placeholder="{{ 'layout.footer.email_placeholder' | t }}">
+    <button class="sbmt"  name="subscribe" type="submit">
+      {{ 'layout.footer.subscribe' | t }}
+    </button>
+  </div>
+  <div id="subscribe-result" class="subscribe-result" >
+  </div>
+</form>
+<script type="text/javascript">
+  $(document).ready(function(){
+    ajaxMailChimpForm($("#{{ formId }}"), $("#subscribe-result"));
+
+    // Turn the given MailChimp form into an ajax version of it.
+    // If resultElement is given, the subscribe result is set as html to
+    // that element.
+    function ajaxMailChimpForm($form, $resultElement){
+      // Hijack the submission. We'll submit the form manually.
+      $form.submit(function(e) {
+        e.preventDefault();
+
+        if (!isValidEmail($form)) {
+          var error =  "A valid email address must be provided.";
+          $resultElement.html(error);
+          $resultElement.css("color", "red");
+        } else {
+          $resultElement.css("color", "#008000");
+          $resultElement.html("Subscribing...");
+          submitSubscribeForm($form, $resultElement);
+        }
+      });
+    }
+    // Validate the email address in the form
+    function isValidEmail($form) {
+      // If email is empty, show error message.
+      // contains just one @
+      var email = $form.find("input[type='email']").val();
+      if (!email || !email.length) {
+        return false;
+      } else if (email.indexOf("@") == -1) {
+        return false;
+      }
+
+      return true;
+    }
+    // Submit the form with an ajax/jsonp request.
+    // Based on http://stackoverflow.com/a/15120409/215821
+    function submitSubscribeForm($form, $resultElement) {
+      $.ajax({
+        type: "GET",
+        url: $form.attr("action"),
+        data: $form.serialize(),
+        cache: false,
+        dataType: "jsonp",
+        jsonp: "c", // trigger MailChimp to return a JSONP response
+        contentType: "application/json; charset=utf-8",
+        error: function(error){
+          // According to jquery docs, this is never called for cross-domain JSONP requests
+        },
+        success: function(data){
+          if (data.result != "success") {
+            var message = data.msg || "Sorry. Unable to subscribe. Please try again later.";
+            $resultElement.css("color", "red");
+            if (data.msg && data.msg.indexOf("already subscribed") >= 0) {
+              message = "You're already subscribed. Thank you.";
+              $resultElement.css("color", "#008000");
+            }
+            $resultElement.html(message);
+          } else {
+            $resultElement.css("color", "#008000");
+            $resultElement.html("Thank you!<br>You must confirm the subscription in your inbox.");
+          }
+        }
+      });
+    }
+  });
+</script>
+{% when 'klaviyo' %}
+<form id="email_signup_footer" class="newsletter_form klaviyo_styling klaviyo_gdpr_embed_{{ section.settings.klaviyo_id }}" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="GET" novalidate="novalidate">            
+  <input type="hidden" name="g" value="{{ section.settings.klaviyo_id }}">
+  <p class="err_msg"></p>
+  <div class="input-group matiral-input-box">
+    <input type="email" name="email" id="Email"  placeholder="{{ 'layout.footer.email_placeholder' | t }}">
+    <button type="submit" name="subscribe" class="sub_go">
+      {{ 'layout.footer.subscribe' | t }}
+    </button> 
+  </div>
+  <div class="klaviyo_messages">
+    <div class="success_message" style="display:none;"></div>
+    <div class="error_message" style="display:none;"></div>
+  </div>
+</form>
+
+<div id="email_subscribe"></div>        
+<script type="text/javascript" src="//www.klaviyo.com/media/js/public/klaviyo_subscribe.js"></script>
+<script type="text/javascript">
+  $('#email_signup_footer').on('submit',function(e){    
+    $(this).find('.success_message').hide();
+    $('.err_msg').empty();      
+    var x = true;                  
+    var mtext = $(this).find('#Email');
+    var err_msg;
+    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    if(mtext.val().trim() == '' || !regex.test(mtext.val())) { 
+      if(err_msg == null){
+        err_msg = 'Please Enter Email';
+      }        
+      x = false;
+      $(mtext).css({'border-color':'red'});
+    }       
+
+    if( x == false){        
+      $(this).find('.err_msg').text(err_msg);
+      return false;
+    }
+  }); 
+  
+  KlaviyoSubscribe.attachToForms('#email_signup_footer', {
+    hide_form_on_success: false,
+    success_message: "Please confirm the signing up, check your mail!"
+  });
+</script>
+{% else %}           
+{%- assign formId = 'ContactForm_footer' -%}
+{% form 'customer', id: formId , class: 'newsletter_form footer_validate_form' %}
+{% if form.errors %}
+<p class="error feedback">
+  {{ form.errors }}
+  {% for field in form.errors %}
+  {{ field }} {{ form.errors.messages[field] }}
+  {% endfor %}
+</p>
+{% endif %}
+{% if form.posted_successfully? %}
+<p class="newsletter_success subscribe-result footer">{{ 'customer.newsletter.form_success' | t }}</p>
+{% endif %}
+<div class="input-group matiral-input-box">          
+  <input type="email" id="Email" name="contact[email]" placeholder="{{ 'layout.footer.email_placeholder' | t }}" class="etext">
+  <button type="submit" class="sub_go">
+    {{ 'layout.footer.subscribe' | t }}
+  </button> 
+</div>  
+<p class="err_msg"></p>
+{% endform %}
+{% endcase %}  
+
+

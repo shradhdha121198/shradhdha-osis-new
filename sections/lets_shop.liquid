@@ -1,0 +1,79 @@
+<section class="idx-welcome" data-section="lets_shop">
+  <div class="container">
+    <div class="pride-title">
+      {% if section.settings.text != blank %}
+      {{ section.settings.text }}
+      {% endif %}
+      {% if section.settings.image != blank %}
+      <img  loading="lazy" src="{{ section.settings.image | img_url: "master" }}" alt="Pride Logo">
+      {% endif %}
+    </div>
+    {% if section.settings.btn_url != blank and section.settings.btn_text != blank %}
+    <div class="button-wrap button2 text-center">
+      <a href="{{ section.settings.btn_url }}">{{ section.settings.btn_text }}</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- this for downloaded font family code  -->
+{% assign font_family = settings.font_family %}
+<style>
+  .idx-welcome .pride-title h4{
+    font-family: {{ font_family }};
+  }
+</style>
+
+
+<!-- this for font picker default google font family code  -->
+{% assign base_font = settings.header_font_new %}
+<style>
+  {{base_font | font_face }}
+</style>
+<link rel="preload" as="font" href="{{ base_font | font_url }}" type="font/woff2" crossorigin>
+{% style %}
+:root {
+--font_change: {{ base_font.family }}, {{ base_font.fallback_families }};
+}
+{% endstyle %}
+<style>
+  .button2 a{
+    font-family: var(--font_change);
+      }
+</style>
+
+
+{% schema %}
+  {
+    "name": "Second Section",
+    "settings": [
+		{
+			"type": "textarea",
+			"id": "text",
+			"label": "Let's Shop"
+		},
+		{
+			"type": "image_picker",
+			"id": "image",
+			"label": "Select Image"
+		},
+		{
+			"type": "text",
+			"id": "btn_text",
+			"label": "Button Text"
+		},
+		{
+			"type": "url",
+			"id": "btn_url",
+			"label": "Button Url"
+		}
+	],
+	"presets": [
+		{
+			"name": "Let's Shop",
+			"category": "Let's Shop"
+		}
+	]
+  }
+{% endschema %}

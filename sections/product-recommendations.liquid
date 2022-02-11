@@ -1,0 +1,74 @@
+{% assign heading = 'Product Recommendations' %}
+{% assign limit = 3 %}
+<section class="related-products">
+  <div class="container">
+    <div class="product-recommendations"  data-base-url="{{ routes.product_recommendations_url }}" data-product-id="{{ product.id }}" data-limit="{{ limit }}" data-section-id="{{ section.id }}" data-section-type="product-recommendations">
+      {% if recommendations.performed %}
+        {% if recommendations.products_count > 0 %}
+        <h2 class="h3">{{heading}}</h2>
+        <div class="row">
+          {% for product in recommendations.products %}
+          <div class="related-product-item three">
+            <div class="related-item-cover">
+              <div class="rp-image">
+                <img  loading="lazy" src="{{ product.featured_image | img_url: "master" }}" alt="{{product.title}}">
+              </div>
+              <div class="rp-content">
+                <h5>{{product.title}}</h5>
+                <div class="btn-border4">
+                  <a href="{{product.url}}">VIEW PRODUCT</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      {% else %}
+      	No recommendations
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% schema %}
+  {
+    "name": "Section name",
+    "settings": []
+  }
+{% endschema %}
+{% javascript %}
+var loadProductRecommendationsIntoSection = function() {
+var productRecommendationsSection = document.querySelector(".product-recommendations");
+if (productRecommendationsSection === null) { return; }
+var productId = productRecommendationsSection.dataset.productId;
+
+var baseUrl = productRecommendationsSection.dataset.baseUrl;
+
+var limit = productRecommendationsSection.dataset.limit;
+
+var requestUrl = baseUrl + "?section_id=product-recommendations&product_id=" + productId + "&limit=" + limit;
+
+var request = new XMLHttpRequest();
+request.open("GET", requestUrl);
+request.onload = function() {
+if (request.status >= 200 && request.status < 300) {
+                                                  var container = document.createElement('div');
+                                                  container.innerHTML = request.response;
+                                                  productRecommendationsSection.parentElement.innerHTML = container.querySelector(".product-recommendations").innerHTML;
+                                                  }
+                                                  };
+                                                  request.send();
+                                                  };
+
+
+
+
+
+                                                  document.addEventListener("shopify:section:load", function(event) {
+                                                  if (event.detail.sectionId === "product-recommendations") {
+                                                  loadProductRecommendationsIntoSection();
+                                                  }
+                                                  });
+
+                                                  loadProductRecommendationsIntoSection();
+                                                  {% endjavascript %}

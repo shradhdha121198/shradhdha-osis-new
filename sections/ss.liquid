@@ -1,0 +1,438 @@
+<section data-component="page">
+  {% if page.metafields.custom_fields["featured_image"] != blank %}
+    <div
+      class="about__featured-wrapper lazyload"
+      data-bgset="{% include 'cf-image' with image: page.metafields.custom_fields["featured_image"], print: 'url' %}"
+      role="img"  
+    >
+      <div class="about__image-overlay" {% if page.metafields.custom_fields["text_color"] != blank %}style="color: {{ page.metafields.custom_fields["text_color"] }}"{% endif %}>
+        <div class="about__image-overlay-content section tc">
+          <p class="about__breadcrumbs type-heading-meta">{{ 'general.meta.home' | t }} / {{ page.title }}</p>
+
+          {% if page.metafields.custom_fields["heading"] != blank %}
+            <h1 class="about__heading type-heading-display">
+              {{ page.metafields.custom_fields["heading"] }}
+            </h1>
+          {%- endif -%}
+
+          {% if page.metafields.custom_fields["subheading"] != blank %}
+            <h2 class="about__subheading type-body-large">
+             {{ page.metafields.custom_fields["subheading"] }}
+            </h2>
+          {%- endif -%}
+        </div>
+      </div>
+
+     {% if page.metafields.custom_fields["overlay_color"] != blank %}
+        <div class="z-1 absolute absolute--fill o-{{ page.metafields.custom_fields["overlay_opacity"] }}" style="background: {{ page.metafields.custom_fields["overlay_color"] }};"></div>
+      {% endif %}
+    </div>
+  {%- else -%}
+
+    {% render 'page-header' with title: page.title %}
+
+  {%- endif -%}
+  <div class="about__copy">
+    <div class="type-body-large rte centered-content">
+      {{ page.content }}
+        <div class="kevin-murphy-info">
+          <ul>
+            {% if section.blocks.size > 0 %}
+
+            {% for block in section.blocks %}
+            {% for i in (1..12) %}
+            {% capture gallery-fimage %}gallery-fimage{{i}}{% endcapture %}
+            {% capture gallery-link %}gallery-link{{i}}{% endcapture %}	
+            {% capture gallery-name %}gallery-name{{i}}{% endcapture %}
+            {% capture gallery-subheading %}gallery-subheading{{i}}{% endcapture %}	
+            {% capture gallery-price %}gallery-price{{i}}{% endcapture %}	
+
+            {%- if block.settings[gallery-link] != blank -%}
+            <li>
+              <div class="img">
+                <a href="{{ block.settings[gallery-link] }}">
+                  <img src="{{block.settings[gallery-fimage] | img_url: 'master' }}"/>
+                </a>
+                <span><a target="_blank" href="{{ block.settings[gallery-link] }}">Shop Now</a></span>
+              </div>
+              <a href="{{block.settings[gallery-link]}}" class="boost-pfs-filter-product-item-title">{{block.settings[gallery-name]}}</a>
+              <p class="boost-pfs-filter-product-item-vendor">{{block.settings[gallery-subheading]}}</p>
+              <p class="boost-pfs-filter-product-item-price">
+                <span class="boost-pfs-filter-product-item-regular-price">${{block.settings[gallery-price]}}</span>
+              </p>        
+
+            </li>
+            {%- endif -%}
+
+            {% endfor %}
+            {% endfor %}
+            
+            {% endif %}
+          </ul>           
+        </div>            	
+    </div>
+  </div>
+
+</section>
+
+{% schema %}
+  {
+	"name": "Kevin Murphy Gallery",
+	"blocks": [
+    		{
+    			"type": "text_block",
+    			"name": "Gallery Item",
+    			"settings": [
+				 {
+				    "type": "header",
+					"content":"Section 1"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage1",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link1",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name1",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading1",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price1",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 2"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage2",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link2",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name2",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading2",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price2",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 3"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage3",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link3",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name3",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading3",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price3",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 4"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage4",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link4",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name4",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading4",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price4",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 5"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage5",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link5",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name5",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading5",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price5",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 6"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage6",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link6",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name6",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading6",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price6",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 7"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage7",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link7",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name7",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading7",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price7",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 8"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage8",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link8",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name8",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading8",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price8",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 9"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage9",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link9",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name9",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading9",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price9",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 10"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage10",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link10",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name10",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading10",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price10",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 11"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage11",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link11",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name11",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading11",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price11",
+                    "label": "Price"
+                  },
+				 {
+				    "type": "header",
+					"content":"Section 12"
+				 },
+				 {
+                    "type": "image_picker",
+                    "id": "gallery-fimage12",
+                    "label": "Product Image"
+				 },
+				 {
+                    "type": "text",
+                    "id": "gallery-link12",
+                    "label": "Product Link"
+                 },
+				 {
+                    "type": "text",
+                    "id": "gallery-name12",
+                    "label": "Product Title"
+                  },
+					{	
+                    "type": "text",
+                    "id": "gallery-subheading12",
+                    "label": "Prduct Vendor"
+                  },
+				  {
+                    "type": "text",
+                    "id": "gallery-price12",
+                    "label": "Price"
+                  }
+    			]
+    		}
+		]
+}
+{% endschema %}

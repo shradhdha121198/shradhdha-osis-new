@@ -1,0 +1,40 @@
+{% comment %}https://shopify.dev/tutorials/customize-theme-add-date-picker-for-delivery-dates{% endcomment %}
+
+{{ '//code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css' | stylesheet_tag }}
+{{ '//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js' | script_tag }}
+
+<div class="date_of_del">
+  <p>
+    <label for="date">Pick a delivery date:</label>
+    <input id="date" type="text" name="attributes[date]" value="{{ cart.attributes.date }}" />
+    <span style="display:block" class="instructions"> We do not deliver during the week-end.</span>
+  </p>
+</div>
+<script>
+  window.onload = function() {
+    if (window.jQuery) {
+      let $ = window.jQuery;
+      $(function() {
+        $("#date").datepicker({
+          minDate: +1, 
+          maxDate: '+2M',
+          beforeShowDay: $.datepicker.noWeekends
+        });
+      });
+    }
+  }
+</script>
+<style>
+  .date_of_del{
+    color: #3B3B3B;
+    padding: 12px 15px;
+    background: #7CA7AD;
+    text-transform: uppercase;
+    font-size: 16px;
+    margin: 0;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    font-weight: bold;
+    width: 49%;
+  }
+</style>

@@ -1,0 +1,503 @@
+<div class="header-initial">
+    <div class="container">
+        <div class="row">
+            <div class="menu-bar">
+                <button><img  loading="lazy" src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/menu-bar.svg?v=1611118628" alt="Menu"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<header class="site-header home-header">
+  <div class="announcement bgcolor6">
+    <div class="container">
+      <div class="row jc-c">
+        <p>{{'header_section.header.announce.announce_name' | t }}</p>
+        <div class="filter-select-block d-flex bg-secondary header-account-select">
+          <a href="/account">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                    d="M22.1924 3.8076C19.737 1.35225 16.4724 0 13 0C9.52744 0 6.26295 1.35225 3.8076 3.8076C1.35225 6.26295 0 9.52744 0 13C0 16.4724 1.35225 19.737 3.8076 22.1924C6.26295 24.6478 9.52744 26 13 26C16.4724 26 19.737 24.6478 22.1924 22.1924C24.6478 19.737 26 16.4724 26 13C26 9.52744 24.6478 6.26295 22.1924 3.8076ZM6.51726 22.465C7.06097 19.3344 9.7738 17.0252 13 17.0252C16.2264 17.0252 18.939 19.3344 19.4827 22.465C17.637 23.7331 15.4038 24.4766 13 24.4766C10.5962 24.4766 8.36304 23.7331 6.51726 22.465ZM8.86649 11.3683C8.86649 9.08885 10.7208 7.23474 13 7.23474C15.2792 7.23474 17.1335 9.08905 17.1335 11.3683C17.1335 13.6475 15.2792 15.5018 13 15.5018C10.7208 15.5018 8.86649 13.6475 8.86649 11.3683ZM20.8023 21.4083C20.3922 19.9509 19.578 18.6286 18.4366 17.5957C17.7363 16.9619 16.9393 16.4619 16.0824 16.1094C17.6312 15.0991 18.6572 13.3513 18.6572 11.3683C18.6572 8.24898 16.1193 5.7113 13 5.7113C9.88072 5.7113 7.34305 8.24898 7.34305 11.3683C7.34305 13.3513 8.36899 15.0991 9.91762 16.1094C9.06088 16.4619 8.26366 16.9617 7.56343 17.5955C6.42224 18.6284 5.60776 19.9507 5.19774 21.4081C2.93936 19.3108 1.52344 16.3178 1.52344 13C1.52344 6.67178 6.67178 1.52344 13 1.52344C19.3282 1.52344 24.4766 6.67178 24.4766 13C24.4766 16.318 23.0606 19.311 20.8023 21.4083Z"
+                    fill="white" />
+            </svg>
+            <div class="custome-select type">{{ 'customer.account.my_account' | t }} </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="main-header">
+    <div class="container">
+      <div class="row ai-c">
+        <div class="menu-bar">
+          <button class="menu-opener"><img  loading="lazy" src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/menu-icon.svg?v=1610947757" alt="Menu"></button>
+        </div>
+        {% if section.settings.image_logo != blank %}
+        <div class="logo">
+          <a href="{{ shop.url }}"><img  loading="lazy" src="{{ section.settings.image_logo | img_url: "master" }}" alt="Oasis"></a>
+        </div>
+        {% endif %}
+
+        <nav class="nav">
+          <ul class="navigation">
+            {% assign l = section.settings.main_menu %}
+            {% for link in linklists[l].links  %}
+              {% if linklists[link.handle] == empty %}
+              {% assign hasmega = false %}
+                {% for block in section.blocks %}
+                {% assign mmi = block.settings.menuItem | downcase | handle %}
+                {% assign li = link.title | downcase | handle %}
+                  {% if li == mmi %}
+                  {% assign hasmega = true %}
+                  {% assign x = forloop.index %}
+                  {% break %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              <li class="{% if hasmega %}mega-menu{% endif %} nav-item {% if link.title == 'CONTACT' %}nav-item-contact{% endif %}" data-item="{{ link.title | downcase | handle  }}">
+                <a href="{{ link.url }}" class="nav-link" style="font-family: DIN-Bold;">{{ link.title }}</a>
+                {% if link.links != blank %}
+                <ul class="submenu">
+                  {% for child_link in link.links %}
+                  <li>
+                    <a href="{{ child_link.url }}" class="nav-link" style="font-family: DIN-Bold;"> {{ child_link.title }}</a>
+                    {% if child_link.links != blank %}
+                    <ul class="submenu_1">
+                      {% for grandchild_link in child_link.links %}
+                      <li>
+                        <a href="{{ grandchild_link.url }}" class="nav-link" style="font-family: DIN-Bold;">
+                          {{ grandchild_link.title }}
+                        </a>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+                {%- if hasmega -%}
+                  {%- assign x = x | minus: 1 -%}
+                  {%- assign b = section.blocks[x] -%}
+                  <div class="mega-menu-container {{ b.settings.menuItem | downcase | handle  }}" data-item="{{ b.settings.menuItem | handle }}">
+                    <div class="container">
+                      <div class="row">
+                        {% if b.type == 'manu' %}
+                        <div class="mega-menu-col" >
+                          {% assign m1 = b.settings.menu1 %}
+                          <ul class="m-menu">
+                            {% for l in linklists[m1].links %}
+                            <li><a href="{{ l.url }}">{{ l.title }}</a></li>
+                            {% endfor %}
+                          </ul>
+                        </div>
+                        {% if b.settings.bannerlink != blank %}
+                        <div class="mega-menu-col m-img-col" >
+                          <div class="m-block">
+                            <a href="{{ b.settings.bannerlink }}">
+                              <img  loading="lazy" src="{{ b.settings.banner | img_url: 'large' }}" alt="" />
+                            </a>
+                            <span class="m-block-content">{{ b.settings.text }}</span>
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% if b.settings.bannerlink1 != blank %}
+                        <div class="mega-menu-col m-img-col" >
+                          <div class="m-block">
+                            <a href="{{ b.settings.bannerlink1 }}">
+                              <img  loading="lazy" src="{{ b.settings.banner1 | img_url: 'large' }}" alt="" />
+                            </a>
+                            <span class="m-block-content">{{ b.settings.text1 }}</span>
+                          </div>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                      </div>
+                    </div>
+                </div>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+        
+        <!-- start code for multiplae currency -->
+        {% form 'currency' , class:'currency' %}
+        <select name="currency" id="select_currency">
+          {% for currency in shop.enabled_currencies %}
+          {% if currency == cart.currency %}
+          <option selected="true" value="{{currency.iso_code}}">{{currency.iso_code}} {{currency.symbol}}</option>
+          {% else %}
+          <option value="{{currency.iso_code}}">{{currency.iso_code}}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+        <input type="hidden" name="form_type" value="currency">
+        <input type="hidden" name="return_to" value="{{ request.path }}">
+        {% endform %}
+        <script>
+          $('body').on("change","#select_currency",function(e){
+            $('.currency').submit();
+          });
+        </script>
+        <!-- end code for multiplae currency -->
+
+        {% comment %}
+        <!-- start code for multiplae currency (JS- selectbox convert ul/li) and Gliss code -->
+        {% form 'currency', class: "currency" %}
+        <select name="currency" id="select_currency" class="select_currency_class">
+          {% for currency in shop.enabled_currencies %}
+          {% if currency == cart.currency %}
+          <option selected="true" value="{{currency.iso_code}}">{{currency.iso_code}} {% if currency.symbol %}{{ currency.symbol }}{% endif %}</option>
+          {% else %}
+          <option value="{{currency.iso_code}}">{{currency.iso_code}} {% if currency.symbol %}{{ currency.symbol }}{% endif %}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+        <input type="hidden" name="form_type" value="currency">
+        <input type="hidden" name="return_to" value="{{ request.path }}">
+        {% endform %}
+        <script>
+          $('body').on("change","#select_currency",function(e){
+            $(this).closest('form').submit();
+          });
+
+          $('#select_currency').each(function() {
+            var select = $(this),
+                name = select.attr('name');
+            select.hide();
+            select.wrap('<div class="nice-select-wrap"></div>');
+            var parent = select.parent('.nice-select-wrap');
+            parent.append('<ul id=' + name + ' style="display:none"></ul>');
+            select.find('option').each(function() {
+              var option = $(this),
+                  value = option.attr('value'),
+                  label = option.text();
+              if (option.is(":selected")) {
+                $('<a href="#" class="drop">' + label + '</a>').insertBefore(parent.find('ul'));
+              } else {
+                parent.find('ul').append('<li><a href="#" id="' + value + '">' + label + '</a></li>');
+              }
+            });
+            parent.find('a').on('click', function(e) {
+              parent.toggleClass('down').find('ul').slideToggle(300);
+              e.preventDefault();
+            });
+            parent.find('ul a').on('click', function(e) {
+              e.preventDefault();
+              var niceOption = $(this),
+                  value = niceOption.attr('id'),
+                  text = niceOption.text();
+              select.val(value);
+              parent.find('.drop').text(text);
+              $('#select_currency').val(value).change();
+            });
+          });
+        </script>
+        <!-- end code for multiplae currency -->
+        {% endcomment %}
+        
+        
+        
+        
+        <div class="right-menu">
+          <div class="search-icon">
+            <form class="search" action="/search">
+              <input type="search" class="search_input" placeholder="Search" name="q" value="{{ search.terms | escape }}" />
+              <button type="submit"><img  loading="lazy" src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/search-icon_09941478-4e81-4cde-a1ad-dfe2b0dc5170.svg?v=1598252023" alt="Search"></button>
+            </form>
+          </div>
+          <div class="overlay_search">
+            <div class="search_popup">
+
+            </div>
+          </div>
+
+          <div class="cart-icon">
+            <a class="cart-image" href="/cart"><img  loading="lazy" src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/cart-icon_34dbf037-93f1-49bf-aede-bcbb83eadf3f.svg?v=1598252062" alt="Search"></a>
+          </div>
+          <div class="cart_popup">
+            <div class="cart_pop">
+
+            </div>
+          </div>
+          <div class="cart_count">
+            <span class="item_count">{{ cart.item_count }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<section class="mobile-menu" style="padding-top: 137px;">
+  <div class="mobile-menu-container">
+    <div class="mobile-search">
+      <form>
+        <div class="search-input">
+          <input type="search" placeholder="SEARCH OUR STORE">
+        </div>
+        <button type="submit"><img  loading="lazy" src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/mobile-search-icon.svg?v=1610946477" alt="Search"></button>
+      </form>
+    </div>
+    <div class="mobile-nav">
+      <ul class="navigation">
+        {% for link in linklists[section.settings.main_menu_mobile].links %}
+        <li class="nav-item"><a href="{{ link.url }}" class="nav-link">{{ link.title }}</a><i class="submenuOpen">+</i>
+          <div class="mobile-submenu">
+            {% if link.links != blank %}
+            <ul class="m-menu">
+              {% for child_link in link.links %}
+              <li class="nav-item"><a href="{{ child_link.url }}">{{ child_link.title }}</a>
+                {% if child_link.links != blank %}
+                <ul class="sub_subclass">
+                  {% for sub_child in child_link.links %}
+                  <li class="nav-item"><a href="{{ sub_child.url }}">{{ sub_child.title }}</a></li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+<style>
+  .right-menu{
+    position: relative;
+  }
+  .item_count{
+    background: #e5dabf;
+    border-radius: 50%;
+	max-width: 20px;
+    width: 100%;
+/*     height: 100%; */
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    position: absolute;
+    top: 8px;
+    left: 99%;
+    z-index: 9999;
+  }
+  .search-icon{
+    margin-left: 20px;
+  }
+  .search-icon form{
+    display: flex;
+  }
+</style>
+<script>
+  $('body').click('.header-initial .menu-bar button', function () {
+    $('.site-header').addClass('visible');
+  });
+
+  $(window).scroll(function () {
+    var sd = jQuery(window).scrollTop();
+    if (sd > 0) {
+      $('.site-header').addClass('sticky');
+    } else {
+      $('.site-header').removeClass('sticky');
+    }
+  });
+  
+  $('.cart-icon .cart-image img').on('click', function(e){
+    e.preventDefault();
+    var link = $(this).parents('.cart-image').attr('href')+'?view=mini';
+    $.get(link, function(data){
+      $('.cart_pop').html(data);
+    });
+    $('.cart_popup').show();
+    $.getJSON("/cart.js", function(cart) {
+      $('.item_count').text(cart.item_count);
+    });
+  });
+</script>
+<style>
+  .overlay_search{
+  	position: relative;
+    z-index: 900;
+  }
+  .display{
+  	position: absolute;
+    top: 73px;
+    right: 187px;
+    background-color: #ffffff;
+    width: 421px;
+    overflow-y: scroll;
+    height: 350px;
+  }
+  .search_header{
+  width: 100%;
+  }
+  .home-header .image{
+    width: 50%;
+    max-width: 150px;
+    padding: 20px;
+  }
+  .home-header .image a{
+  width: 100%;
+  }
+  .desc_search{
+  	width: 50%;
+  }
+  .desc_search p{
+  padding-left: 16px;
+  }
+  .image_not_a{
+   width: 100% !important;
+  }
+  .search_pro{
+    font-size: 20px;
+  }
+</style>
+<script>
+  /* start =  instant search - means search input na bajuma popup (search nu sort list) */
+  $(".search_input").on('focus, blur, keyup',function(e){
+    var value=$(this).val();
+    $.getJSON("/search/suggest.json", {
+      "q": value,
+      "resources": {
+        "type": "product,page,article,collection"
+      }
+    }).done(function(data){
+      var result="",index=0,results=[],results_div="<div class='display'>";
+      for(var item in data.resources.results){
+        for(var i in data.resources.results[item]){
+          if(item == 'articles'){
+            if(data.resources.results[item][i].image){
+              results_div+="<div class='row search_header'><div class='image'><a class='image_not_a' href='"+data.resources.results[item][i].url+"'><img  loading='lazy' src='"+data.resources.results[item][i].image+"' ></a></div>";
+            }
+            results_div+="<div class='desc_search'><a href='"+data.resources.results[item][i].url+"'><h2 class='search_pro'>"+data.resources.results[item][i].title+"</h2></a>\
+Author:"+data.resources.results[item][i].author+"\
+  </div></div>";
+          }
+          else if(item == 'products') {
+            if(data.resources.results[item][i].featured_image){
+              results_div+="<div class='row search_header'><div class='image'><a class='image_not_a' href='"+data.resources.results[item][i].url+"'><img loading='lazy' src='"+data.resources.results[item][i].featured_image.url+"' ></a></div>";
+            }
+            results_div+="<div class='desc_search'><a href='"+data.resources.results[item][i].url+"'><h2 class='search_pro'>"+data.resources.results[item][i].title+"</h2></a>\
+<p>Price: "+data.resources.results[item][i].price+" </p>\
+  </div></div>";              
+          }
+          else if(item == 'pages'){
+            results_div+="<div class='row search_header'><div class='desc_search_page'><a href='"+data.resources.results[item][i].url+"'><h2 class='search_pro'>"+data.resources.results[item][i].title+"</h2></a>\
+<p>"+data.resources.results[item][i].body.slice(0, 50).concat('...')+"</p>\
+  </div></div>";
+          }
+          else if(item == 'collections'){
+            if(data.resources.results[item][i].featured_image){
+              results_div+="<div class='row search_header'><div class='image'><a class='image_not_a' href='"+data.resources.results[item][i].url+"'><img loading='lazy' src='"+data.resources.results[item][i].featured_image.url+"' ></a></div>";
+            }
+            results_div+="<div class='desc_search'><a href='"+data.resources.results[item][i].url+"'><h2 class='search_pro'>"+data.resources.results[item][i].title+"</h2></a>\
+  </div></div>";
+          }
+        }
+      }
+      $('.search_popup').html(results_div);
+      $('.search_popup').show();
+      $('.overlay_search').css('display','block');
+      $(".search_popup .remove").on("click",function(e){
+        $('.search_popup').hide();
+        $('.overlay_search').hide();
+      });
+    }); 
+    if (value == ''){
+      $('.overlay_search').css('display','none');
+      $('.search_popup').css('display','none');
+    }
+  });
+  /* end =  instant search - means search input na bajuma popup (search nu sort list) */
+</script>
+{% schema %}
+  {
+    "name": "Header",
+    "settings": [
+		{
+			"type": "image_picker",
+			"id": "image_logo",
+			"label": "Logo Image"
+		},
+		{
+			"type": "link_list",
+			"id": "main_menu",
+			"label": "Main Menu"
+		},
+		{
+			"type": "link_list",
+			"id": "main_menu_mobile",
+			"label": "Mobile Main Menu"
+		},
+        {
+        "type": "range",
+        "id": "body_base_size",
+        "label": "Base size",
+        "default": 16,
+        "min": 14,
+        "max": 20,
+        "step": 1,
+        "unit": "px"
+        }
+	],
+	"blocks": [
+		{
+		"type": "manu",
+		"name": "Add Menu",
+		"settings": [
+		  {
+			"type": "text",
+			"label": "add menu item name",
+			"id": "menuItem",
+			"info": "add exact manu name which you want to set as mega menu. make sure this is single level menu."
+		  },
+		  {
+            "type": "header",
+            "content": "Menu items"
+          },
+		  {
+            "type": "link_list",
+            "id": "menu1",
+            "label": "Select menu 1"
+          },
+		  {
+            "type": "header",
+            "content": "Right Banner"
+          },
+		  {
+            "type": "image_picker",
+            "id": "banner",
+            "label": "Banner"
+          },
+		  {
+            "type": "url",
+            "id": "bannerlink",
+            "label": "Banner Link"
+          },
+		  {
+            "type": "text",
+            "id": "text",
+            "label": "Banner text"
+          },
+		  {
+            "type": "image_picker",
+            "id": "banner1",
+            "label": "Banner"
+          },
+		  {
+            "type": "url",
+            "id": "bannerlink1",
+            "label": "Banner Link"
+          },
+		  {
+            "type": "text",
+            "id": "text1",
+            "label": "Banner text"
+          }
+		]
+	  }
+	]
+  }
+{% endschema %}

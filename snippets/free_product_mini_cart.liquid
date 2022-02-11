@@ -1,0 +1,193 @@
+{% assign total_money = cart.total_price %}
+{% assign free_pro_f = all_products[settings.pro_id_f] %}
+{% assign free_pro_t = all_products[settings.pro_id_t] %}
+{% assign free_pro_th = all_products[settings.pro_id_th] %}
+
+{% assign first_price = settings.pro_id_f_text | times: 1 %} 
+{% assign second_price = settings.pro_id_t_text | times: 1 %} 
+
+
+{% if total_money <= first_price %}
+<p class="get_free">You get one free product</p>
+<div class="free_all_product">
+   <div class="flex_form">
+     <form></form>
+     <form action="/cart/add" class="form_post form_free" method="post" id="{{ free_pro_f.id }}">
+       <input type="hidden"  name="quantity" min="1" value="1" class="tc item-quantity">
+       <input type="hidden" name="id" value="{{ free_pro_f.selected_or_first_available_variant.id }}">
+       <div class="free_pro">
+         <div class="free_image_flex">
+           <div class="free_images">
+             {% if free_pro_f != blank %}
+             <a href="{{free_pro_f.url}}"><img  loading="lazy" src="{{free_pro_f.featured_image | img_url: "58x"}}" alt="freeproduct 1"></a>
+             {% endif %}
+           </div>
+         </div>
+       </div>
+     </form>
+  </div>
+  <div class="add_cart_option">
+    <p>{{ 'cart.get_free' | t }}</p>
+  </div>
+  <div class="add_to_cart free_ct">
+    <div  class="add_cart_btn_free free_add_btn">Add to Cart</div>
+  </div>
+</div>
+
+{% elsif first_price > total_money or total_money <= second_price %}
+<p class="get_free">You get two free product</p>
+<div class="free_all_product">
+  <div class="flex_form new_add_section">
+    <form></form>
+    <form action="/cart/add" class="form_post form_free" method="post" id="{{ free_pro_f.id }}">
+      <input type="hidden"  name="quantity" min="1" value="1" class="tc item-quantity">
+      <input type="hidden" name="id" value="{{ free_pro_f.selected_or_first_available_variant.id }}">
+      <div class="free_pro">
+        <div class="free_image_flex">
+          <div class="free_images">
+            {% if free_pro_f != blank %}
+            <a href="{{free_pro_f.url}}"><img  loading="lazy" src="{{free_pro_f.featured_image | img_url: "58x"}}" alt="freeproduct 1"></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </form>
+    <form action="/cart/add" class="form_post form_free" method="post" id="{{ free_pro_t.id }}">
+      <input type="hidden"  name="quantity" min="1" value="1" class="tc item-quantity">
+      <input type="hidden" name="id" value="{{ free_pro_t.selected_or_first_available_variant.id }}">
+      <div class="free_pro">
+        <div class="free_image_flex">
+          <div class="free_images">
+            {% if free_pro_t != blank %}
+            <a href="{{free_pro_t.url}}"><img  loading="lazy" src="{{free_pro_t.featured_image | img_url: "58x"}}" alt="freeproduct 2"></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="add_cart_option">
+    <p>{{ 'cart.get_free' | t }}</p>
+  </div>
+  <div class="add_to_cart free_ct">
+    <div  class="add_cart_btn_free free_add_btn">Add to Cart</div>
+  </div>
+</div>
+
+{% else %}
+<p class="get_free">You get three free product</p>
+<div class="free_all_product">
+  <div class="flex_form new_add_section">
+    <form></form>
+    <form action="/cart/add" class="form_post form_free form_first" method="post" id="{{ free_pro_f.id }}">
+      <input type="hidden"  name="quantity" min="1" value="1" class="tc item-quantity">
+      <input type="hidden" name="id" value="{{ free_pro_f.selected_or_first_available_variant.id }}">
+      <div class="free_pro">
+        <div class="free_image_flex">
+          <div class="free_images">
+            {% if free_pro_f != blank %}
+            <a href="{{free_pro_f.url}}"><img  loading="lazy" src="{{free_pro_f.featured_image | img_url: "58x"}}" alt="freeproduct 1"></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </form>
+    <form action="/cart/add" class="form_post form_free" method="post" id="{{ free_pro_t.id }}">
+      <input type="hidden"  name="quantity" min="1" value="1" class="tc item-quantity">
+      <input type="hidden" name="id" value="{{ free_pro_t.selected_or_first_available_variant.id }}">
+      <div class="free_pro">
+        <div class="free_image_flex">
+          <div class="free_images">
+            {% if free_pro_t != blank %}
+            <a href="{{free_pro_t.url}}"><img  loading="lazy" src="{{free_pro_t.featured_image | img_url: "58x"}}" alt="freeproduct 2"></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </form>
+    <form action="/cart/add" class="form_post form_free" method="post" id="{{ free_pro_th.id }}">
+      <input type="hidden"  name="quantity" min="1" value="1" class="tc item-quantity">
+      <input type="hidden" name="id" value="{{ free_pro_th.selected_or_first_available_variant.id }}">
+      <div class="free_pro">
+        <div class="free_image_flex">
+          <div class="free_images">
+            {% if free_pro_th != blank %}
+            <a href="{{free_pro_th.url}}"><img  loading="lazy" src="{{free_pro_th.featured_image | img_url: "58x"}}" alt="freeproduct 3"></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="add_cart_option">
+    <p>{{ 'cart.get_free' | t }}</p>
+  </div>
+  <div class="add_to_cart free_ct">
+    <div  class="add_cart_btn_free free_add_btn">Add to Cart</div>
+  </div>
+</div>
+{% endif %}
+
+<style>
+  .add_cart_option p{
+    color: #bb985f;
+    font-weight: bold;
+  }
+  .flex_form{
+    display: flex; 
+    /*     justify-content: space-between; */
+    max-width: 55%;
+  }
+  .free_images img{
+    width: 100%;
+    max-width: 100%;
+    padding: 5px;
+    object-fit: cover;
+  }
+  .total_price_cart{
+    position: absolute;
+    bottom: 6%;
+    left: 0;
+    right: 0;
+  }
+  .free_product_mini_cart{
+    background-color: #e8d2b0;
+    padding: 20px;
+    position: fixed;
+  }
+  .free_add_btn{
+    font-size: 20px;
+    min-width: 0;
+    max-width: 50%;
+    color: #fff;
+    background: #bb985f;
+    border-color: #bb985f;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 0;
+    text-align: center;
+    padding: 10px 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    display: block;
+    /*     margin: 0 auto; */
+    transition: ease .25s;
+    cursor: pointer;
+    line-height: 1.4;
+    align-items: center;
+    justify-content: center;
+  }
+  .free_add_btn:hover {
+    color: #fff;
+    background: #000;
+  }
+  .free_ct{
+    margin-left: 20px;
+  }
+  .free_pro_mini, .get_free{
+    text-transform: uppercase;
+    font-weight: bold;
+    color: red;
+  }
+</style>
+<!-- script in osis.js file  -->

@@ -1,0 +1,208 @@
+<section class="build_own_product" data-section="build_own_product_section">
+  <div class="container">
+    <div class="product_gift_title">
+      <h2>BUILD YOUR OWN GIFT SET</h2>
+    </div>
+    <div class="list_of_num">
+      <ul class="list_ul">
+        <li class="list_li"><div class="title_num first active_li">1</div></li>
+        <li class="list_li"><div class="title_num active_li_next">2</div></li>
+        <li class="list_li"><div class="title_num">3</div></li>
+        <li class="list_li"><div class="title_num">4</div></li>
+        <li class="list_li"><div class="title_num last">5</div></li>
+      </ul>
+    </div>
+    <div class="all_div">
+      <div class="image_selected_part_first co_div common_display step1">
+         <h3>Who Are You Shopping For?</h3>
+        <div class="image_part">
+          {% if section.settings.image1 != blank %}
+          <div class="image_one img_one">
+            <a><img  loading="lazy" class="" src="{{section.settings.image1 | img_url: "master"}}"></a>
+          </div>
+          {% endif %}
+          {% if section.settings.image2 != blank %}
+          <div class="image_one img_two">
+            <a><img  loading="lazy" class="" src="{{section.settings.image2 | img_url: "master"}}"></a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="image_selected_part_second co_div common step2">
+        <h3>I Want To...</h3>
+        <div class="row_sec">
+          <div class="ticket one_ticket">
+            <h2>BUID MY OWN</h2>
+          </div>
+          <div class="ticket two_ticket">
+            <h2>FEELING LUCKY</h2>
+          </div>
+        </div>
+      </div>
+      <div class="product_selected_part co_div common step3">
+        <div class="product_1 all_product">
+          {% for block in section.blocks %}
+          {% if block.type == 'product' %}
+          {% assign product = all_products[block.settings.product] %}
+          <div class="id_parent">
+            <form action="/cart/add" method="post" class="add_form_1 add_to_cart_a" id="add_form2_{{product.id}}" name="add_form2_{{product.id}}" data-id="{{ product.id }}">
+              <input type="hidden" name='id' value="{{ product.first_available_variant.id }}">
+              <div class="product_image_1 co_img">
+                <img  loading="lazy" src="{{ product | img_url: "master"}}">
+              </div>
+              <div class="product_content_1">
+                <div class="content_title_1">
+                  {{ product.title }}
+                </div>
+              </div>
+              <div class="product_price_1">
+                {{ product.price | money }}
+              </div>
+              <input type="hidden" name="quantity" value="1">
+            </form>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="product_selected_part co_div common step4">
+        <div class="product_2 all_product">
+          {% for block in section.blocks %}
+          {% if block.type == 'product1'  %}
+          {% assign product = all_products[block.settings.product1] %}
+          <div class="id_parent">
+            <form action="/cart/add" method="post" class="add_form_2 add_to_cart_a" id="add_form2_{{product.id}}" name="add_form2_{{product.id}}" data-id="{{ product.id }}">
+              <input type="hidden" name='id' value="{{ product.first_available_variant.id }}">
+              <div class="product_image_2 co_img">
+                <img  loading="lazy" src="{{ product | img_url: "master"}}">
+              </div>
+              <div class="product_content_2">
+                <div class="content_title_2">
+                  {{ product.title }}
+                </div>
+              </div>
+              <div class="product_price_2">
+                {{ product.price | money }}
+              </div>
+              <input type="hidden" name="quantity" value="1">
+            </form>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="product_selected_part co_div common step00">
+        <div class="product_3 all_product">
+          {% for block in section.blocks %}
+          {% if block.type == 'product2'  %}
+          {% assign product = all_products[block.settings.product2] %}
+          <div class="id_parent">
+            <form action="/cart/add" method="post" class="add_form_3 add_to_cart_a" id="add_form2_{{product.id}}" name="add_form2_{{product.id}}" data-id="{{ product.id }}">
+              <input type="hidden" name='id' value="{{ product.first_available_variant.id }}">
+              <div class="product_image_3 co_img">
+                <img  loading="lazy" src="{{ product | img_url: "master"}}">
+              </div>
+              <div class="product_content_3">
+                <div class="content_title_3">
+                  {{ product.title }}
+                </div>
+              </div>
+              <div class="product_price_3">
+                {{ product.price | money }}
+              </div>
+              <input type="hidden" name="quantity" value="1">
+            </form>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        <div class="row_btn">
+          <div class="add_to__cart add-to-cart">
+            <a class="add_btn_">ADD To CART</a>
+          </div>
+          <div class="checkout add-to-cart">
+            <a class="add_check_" href="/cart/checkout">Checkout</a>
+          </div>
+        </div>
+      </div>
+      <div class="btn_div co_div common step5">
+        <h3>You're All Done!</h3>
+        <div class="row_btn">
+          <div class="add_to__cart add-to-cart">
+            <a class="add_btn_">ADD To CART</a>
+          </div>
+          <div class="checkout add-to-cart">
+            <a class="add_check_" href="/cart/checkout">Checkout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pre_next">
+      <div class="pre_btn add-to-cart">
+        <button class="pre_btnn">Prev</button>
+      </div>
+      <div class="next_btn add-to-cart">
+        <button class="next_btnn">Next</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Build Own Product",
+    "settings": [
+		{
+          "type": "image_picker",
+          "id": "image1",
+          "label": "Add image"
+		},
+		{
+          "type": "image_picker",
+          "id": "image2",
+          "label": "Add image"
+		}
+	],
+	"blocks": [
+		{
+			"type": "product",
+			"name": "Add Products",
+			"settings": [
+				{
+					"type": "product",
+					"id": "product",
+					"label": "Select Product"
+				}
+			]
+		},
+		{
+			"type": "product1",
+			"name": "Add Products second",
+			"settings": [
+				{
+					"type": "product",
+					"id": "product1",
+					"label": "Select Product"
+				}
+			]
+		},
+		{
+			"type": "product2",
+			"name": "Add Products third",
+			"settings": [
+				{
+					"type": "product",
+					"id": "product2",
+					"label": "Select Product"
+				}
+			]
+		}
+	],
+	"presets": [
+		{
+			"name": "Build Own Product",
+			"category": "Build Own Product"
+		}
+	]
+  }
+{% endschema %}

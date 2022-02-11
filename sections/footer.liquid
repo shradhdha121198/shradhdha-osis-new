@@ -1,0 +1,325 @@
+<section class="instagram-section" data-section="socialize_with_us">
+  <div class="container">
+
+    {% if template contains 'index' %}
+    {% if section.settings.text != blank %}
+    <h2 class="h3 text-center color3">{{ section.settings.text }} <span class="social-icons">
+      <a href="{{ section.settings.facebook_link }}" class="social-icon"><img  loading="lazy" src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/facebook-logo.svg?v=1610968480" alt="Facebook"></a>
+      <a href="{{ section.settings.instagram_link }}" class="social-icon"><img  loading="lazy" src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/instagram-logo.svg?v=1610968505" alt="instagram"></a>
+      </span>
+    </h2>
+    {% endif %}
+
+    <div class="row instagram-gallery">
+      {% for block in section.blocks %}
+      {% if block.type == 'instagram' %}
+      {% if block.settings.image != blank %}
+      <div class="insta-item five"><a href="#"> <img  loading="lazy" src="{{ block.settings.image | img_url: "master" }}" alt="Instagram"></a></div>
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="footer-contact">
+      {% if section.settings.textarea != blank %}
+      <div class="contact-col">
+        {{ section.settings.textarea }}
+      </div>
+      {% endif %}
+      {% if section.settings.image != blank %}
+      <div class="footer-logo">
+        <a href="{{ shop.url }}"><img  loading="lazy" src="{{ section.settings.image | img_url: "master" }}" alt="Oasis"></a>
+      </div>
+      {% endif %}
+      {% if section.settings.textarea1 != blank %}
+      <div class="contact-col">
+        {{ section.settings.textarea1 }}
+      </div>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="footer-contact">
+      {% if section.settings.textarea != blank %}
+      <div class="contact-col">
+        {{ section.settings.textarea }}
+      </div>
+      {% endif %}
+      {% if section.settings.image != blank %}
+      <div class="footer-logo">
+        <a href="{{ shop.url }}"><img  loading="lazy" src="{{ section.settings.image | img_url: "master" }}" alt="Oasis"></a>
+      </div>
+      {% endif %}
+      {% if section.settings.textarea1 != blank %}
+      <div class="contact-col">
+        {{ section.settings.textarea1 }}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+<footer class="site-footer">
+  <div class="footer-top">
+    <div class="container">
+      <div class="footer-top-cover">
+        <div class="row">
+          {% for link in linklists[section.settings.footer_menu].links %}
+          <div class="footer-col {% if forloop.index0 == 1 %}two-col{% endif %}">
+            <h5 class="footer-title">{{ link.title }}</h5>
+            {% if link.links != blank %}
+            <ul class="footer-menu">
+              {% for child_link in link.links %}
+              <li><a href="{{ child_link.url }}">{{ child_link.title }}</a></li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+
+
+        {% include 'newsletter' %}
+
+
+        <!--  now this kalvio code is comment because console entry is very large list so ....(but this work is proper.) -->
+        <!-- start kalvio custom signup form -->
+        {% comment %}
+        <div class="add_kalvio_sign_up_form">
+          <h5>Kalvio Sign-Up Form</h5>
+          <form id="email_signup" method="GET" class="klaviyo_styling klaviyo_gdpr_embed_TviaWq" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" novalidate="novalidate">
+            <input type="hidden" name="g" value="TviaWq">
+            <input type="hidden" name="$fields" value="$consent">
+            <input type="hidden" name="$list_fields" value="$consent">
+            <div class="inputWrapper">
+              <input type="email" name="email" id="k_id_email" placeholder="Your Email" / >
+              <div class="klaviyo_messages">
+                <div class="success_message" style="display:none;"></div>
+                <div class="error_message" style="display:none;"></div>
+              </div>
+              <div class="klaviyo_form_actions"><button type="submit" class="subscribe-btn klaviyo_submit_button">Subscribe</button></div>
+            </div> 
+            <div class="accept_marketing">
+              <input type="hidden" name="customer[newsletter]" value="newsletter"/>
+              <input type="checkbox" name="customer[accepts_marketing]" checked="checked" value="true" id="marketing" />
+              Subscribe to stay updated with new products and offers!
+            </div>
+          </form>
+          <script type="text/javascript" src="//www.klaviyo.com/media/js/public/klaviyo_subscribe.js"></script>
+          <script type="text/javascript">
+            KlaviyoSubscribe.attachToForms('#email_signup', {
+              hide_form_on_success: false,
+              success_message: "Thank you for signing up! Your special offer is on its way!",
+              extra_properties: {
+                $source: '$embed',
+                $method_type: "Klaviyo Form",
+                $method_id: 'embed',
+                $consent_version: 'Embed default text'
+              },
+              success: function ($form) {
+                setTimeout(function(){
+                  $('.success_message').hide();
+                  $('.error_message').hide();
+                },3000);
+              }    });
+          </script>
+        </div>
+        {% endcomment %}
+        <!-- end kalvio custom signup form -->
+
+
+        {%comment%}
+        <!-- start contact signup form -->
+        {% form 'customer' %}
+        {{ form.errors | default_errors }}
+        {% if form.posted_successfully? %}
+        <p class="note form-success">suceess!!!!!!</p>
+        {% else %}
+        <input type="email" name="contact[email]" id="Email" class="input-group-field" aria-label="newsletter_email" autocorrect="off" autocapitalize="off">
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <input type="submit" class="btn" name="subscribe" id="subscribe" value="submit">
+        {% endif %}
+        <input type="hidden" name="form_type" value="customer">
+        <div class="accept_marketing">
+          <input type="hidden" name="contact[newsletter]" value="newsletter"/>
+          <input type="checkbox" name="contact[accepts_marketing]" value="true" id="marketing" />
+          Subscribe to stay updated with new products and offers!
+        </div>
+        {% endform %}
+        <!-- end contact signup form -->
+        {%endcomment%}
+
+
+        {% comment %}
+        <script async type="text/javascript" src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=XnciZf"></script>
+        <script type="text/javascript" src="//www.klaviyo.com/media/js/public/klaviyo_subscribe.js"></script>
+        <script src="https://a.klaviyo.com/media/js/onsite/onsite.js"></script>
+        <section class="newsletter-section" data-section="newsletter-section">
+          <div class="newsletter-outer home-page">
+            <div class="newsletter-inner home-page">
+              <form id="email_signup" class="klaviyo_gdpr_embed_TviaWq" action="//manage.kmail-lists.com/subscriptions/subscribe" data-ajax-submit="//manage.kmail-lists.com/ajax/subscriptions/subscribe" method="POST" target="_blank" novalidate="novalidate">
+                <input type="hidden" name="g" value="TviaWq">
+                <input type="hidden" name="$fields" value="$accept_marketing">
+
+                <div class="newsletter-field klaviyo_field_group">
+                  <input type="hidden" name="tags" value="newsletter">
+                  <input class="input" type="email" name="email" id="k_id_email" value="" placeholder="Your Email Address" autocorrect="off" autocapitalize="off">
+
+                  <div class="klaviyo_messages">
+                    <div class="success_message" style="display:none;"></div>
+                    <div class="error_message" style="display:none;"></div>
+                  </div>
+                </div>
+                <div class="accept_marketing">
+                  <input type="hidden" name="contact[newsletter]" value="newsletter"/>
+                  <input type="checkbox" name="$accept_marketing" checked="checked" value="true" id="marketing" />
+                  Subscribe to stay updated with new products and offers!
+                </div>
+                <div class="ns-submit-btn">
+                  <button type="submit" class="btn klaviyo_submit_button">
+                    SUBSCRIBE
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+        <script type="text/javascript">
+          KlaviyoSubscribe.attachToForms('#email_signup', {
+            hide_form_on_success: true,
+            extra_properties: {
+              $source: 'ss',
+              $method_type: "Klaviyo Form",
+              $method_id: 'embed',
+              $consent_version: 'Embed default text',
+            }
+          });
+        </script>
+        {% endcomment %}
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <!--   write "©" or "&copy;" in footer copyright -->
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="row jc-c">
+        {% if section.settings.footer_copyright != blank %}
+        <div>© &copy; {{ shop.name }} {{ 'now' | date: "%Y" }} | {{ section.settings.footer_copyright }}</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="payment_icon">
+      {% assign enabled_payment_types = 'afterpay,american_express,apple_pay,bitcoin,dankort,diners_club,discover,dogecoin,visa,sofort,shopify_pay,paypal,master,maestro,litecoin,klarna-pay-later,klarna,jcb,ideal,google_pay,forbrugsforeningen,dwolla,amazon_payments,facebook_pay,paytm,payu,elo,clearpay,laybuy' | remove: ' ' | split: ',' %}
+      {% for type in enabled_payment_types %}
+      <img  loading="lazy" src="{{ type | payment_type_img_url }}" height="24" width="38" alt="" />
+      {% endfor %}
+    </div>
+    <style>
+      .payment_icon{
+        display: flex;
+        justify-content: space-between;
+      }
+    </style>
+  </div>
+  
+  
+  
+</footer>
+{% schema %}
+{
+	"name": "footer",
+	"settings": [
+		{
+			"type": "link_list",
+			"id": "footer_menu",
+			"label": "Footer Menu"
+		},
+		{
+			"type": "richtext",
+			"id": "footer_copyright",
+			"label": "Footer Copyright"
+		},
+		{
+			"type":"header",
+			"content":"NewsLetter"
+		},
+		{	
+			"type":"text",
+			"id":"newsletter_tite",
+			"label":"NewsLetter title"
+		},
+		{
+			"type":"richtext",
+			"id":"newsletter_desc",
+			"label":"Newsletter description"
+		},
+		{
+           "type": "select",
+           "id": "newsletter_option",
+           "options": [
+              { "value": "mailchimp", "label": "Mailchimp"},
+              { "value": "klaviyo", "label": "Klaviyo"},
+			  { "value": "contact", "label": "Contact Form"} 	
+           ],
+			"default": "contact",
+           "label": "Newsletter type"
+        },
+		{	
+			"type":"text",
+			"id":"action_url",
+			"label":"Mailchaimp action URL"
+		},
+		{	
+			"type":"text",
+			"id":"klaviyo_id",
+			"label":"Klaviyo ID"
+		},
+		{
+			"type": "text",
+			"id": "text",
+			"label": "Title"
+		},
+		{
+			"type":"url",
+			"id":"facebook_link",
+			"label":"Facebook Link"
+		},
+		{
+			"type":"url",
+			"id":"instagram_link",
+			"label":"Instagram Link"
+		},
+		{
+			"type": "image_picker",
+			"id": "image",
+			"label": "Footer Logo Image"
+		},
+		{
+         	"type": "textarea",
+            "id": "textarea",
+            "label": "First Address"
+        },
+		{
+         	"type": "textarea",
+            "id": "textarea1",
+            "label": "Second Address"
+        }
+	],
+	"blocks": [
+		{
+			"type": "instagram",
+			"name": "instagram",
+			"settings": [
+				{
+					"type": "image_picker",
+					"id": "image",
+					"label": "Select Image"
+				}
+			]
+		}
+	]
+}
+{% endschema %}

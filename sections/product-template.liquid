@@ -1,0 +1,1478 @@
+<main class="main-content"> 
+  <section class="page-header dataBg main_img_p" data-bg-src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/shop-header.png?v=1598257201">
+    <div class="container">
+      <h2 class="h1 text-center color4">{% render 'breadcrumb' %}</h2>
+    </div>
+  </section>
+  <section class="product-section">
+    <div class="container">
+      <div class="row">
+        <div class="product-gallery half">
+          <div class="image_slick">
+            {% for media in product.media %}
+            {% case media.media_type %}
+            {% when 'image' %}
+            <div class="image-slide">
+              <!--  image zoom functionality now not work because of change JS of variant image https://prnt.sc/11bt74f  -->
+              <a class="image_show_{{ media.alt }} html5lightbox" data-fullscreenmode="true" data-group="set_{{ product.id }}" data-thumbnail="{{ media | product_img_url: '200x' }}">
+                <div class="fan-fav-img">
+                  <div class="monogram_text_update"></div>
+                  <img loading="lazy" class="scroll-indicator lazyload" id="s0{{ forloop.index }}" src="{{ media | product_img_url: 'master' }}" alt="{{ media.alt | escape }}" />
+                </div>
+              </a>
+            </div>
+            {% when 'external_video' %}
+            <div class="image-slide youtube">
+              {{ media  | external_video_tag:  class: "youtube_video", id:"1_" }}
+            </div>
+            {% when 'video' %}
+            <div class="image-slide video">
+              {{ media | video_tag: controls: true , class: "video1" }}
+            </div>
+            {% when 'model' %}
+            <div class="image-slide">
+              {{ media | model_viewer_tag }}
+            </div>
+            {% else %}
+            <div class="image-slide">
+              {{ media | media_tag }}
+            </div>
+            {% endcase %}
+            {% endfor %}
+          </div>
+          <ul class="pro-ul product-img flexbox product_gallery">
+            {% for media in product.media %}
+            {% case media.media_type %}
+            {% when 'video' %}
+            <li class="sub-pro-img flexbox center">
+              {{ media | video_tag: controls: true , class: "video2"}}
+            </li>
+            {% else %}
+            <li class="sub-pro-img flexbox center">
+              <img loading="lazy" src="{{ media | img_url:'350x350' }}" alt="{{ media.alt }}">
+            </li>
+            {% endcase %}
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="product-content half">
+          <div class="product-content-cover">
+            {% assign variant = product.selected_or_first_available_variant %}
+            <h1 class="h2 color6 title_name">{{ product.title }}</h1>{% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge', jm_style: '', concierge_install: true, product: product %}
+            <div class="product-form" id="p{{ product.id }}">
+              {% form 'product', product, class: 'old-class', id: 'oldID' %}
+              
+
+              <!-- Begin Afterpay Liquid Snippet for Shopify v2.5.2 -->
+              {% assign afterpay_logo_theme = 'black' %}
+              {% assign afterpay_count_eligible_variants = 0 %}
+              {% assign afterpay_supported_currencies = 'AUD, NZD, USD' | split: ', ' %}
+              {% if shop.currency == 'USD' %}
+              {% assign afterpay_minimum_value_in_cents = 3500 %}
+              {% assign afterpay_maximum_value_in_cents = 100000 %}
+              {% assign afterpay_terms_url = 'https://www.afterpay.com/purchase-payment-agreement' %}
+              {% assign afterpay_line_1 = 'or pay 4 installments of' %}
+              {% assign afterpay_line_2 = 'with' %}
+              {% else %}
+              {% assign afterpay_minimum_value_in_cents = 4 %}
+              {% assign afterpay_maximum_value_in_cents = 200000 %}
+              {% assign afterpay_terms_url = 'https://www.afterpay.com/terms' %}
+              {% assign afterpay_line_1 = 'or pay 4 installments of' %}
+              {% assign afterpay_line_2 = 'with ' %}
+              {% endif %}
+              {% if afterpay_supported_currencies contains shop.currency %}
+              {% for afterpay_variant in product.variants %}
+              {% if afterpay_variant.available and afterpay_variant.price >= afterpay_minimum_value_in_cents and afterpay_variant.price <= afterpay_maximum_value_in_cents %}
+              {% assign afterpay_count_eligible_variants = afterpay_count_eligible_variants | plus: 1 %}
+              {% endif %}
+              {% endfor %}
+              {% endif %}
+              <div class="after_pay_with_timer {% if product.metafields.timer_name.timer_key == blank and afterpay_count_eligible_variants == 0 %}nothing{% endif %}">
+                <script type="text/javascript">
+    (
+      function(i,s,o,g,r,a,m){
+        i['GoogleAnalyticsObject']=r;
+        i[r]=i[r]||function(){
+          (i[r].q=i[r].q||[]).push(arguments);
+        },i[r].l=1*new Date();
+        a=s.createElement(o),m=s.getElementsByTagName(o)[0];
+        a.async=1;
+        a.src=g;
+        m.parentNode.insertBefore(a,m);
+      }
+    )(window,document,'script','https://www.google-analytics.com/analytics.js','afterpay_ga');
+    afterpay_ga('create', 'UA-108913162-2', {'sampleRate': 1});
+    afterpay_ga('send', 'event', 'Liquid Snippet', 'Report Version', '2.5.2');
+    afterpay_ga('send', 'event', 'Theme', 'Report Name', {{ theme.name | json }});
+    afterpay_ga('send', 'event', 'Shop', 'Report Currency', {{ shop.currency | json }});
+  </script>
+  <p class="afterpay-paragraph" style="display:{% if product.selected_or_first_available_variant.available and product.selected_or_first_available_variant.price >= afterpay_minimum_value_in_cents and product.selected_or_first_available_variant.price <= afterpay_maximum_value_in_cents %}block{% else %}none{% endif %};" data-product-id="{{ product.id }}">
+    <span class="afterpay-text1">{{ afterpay_line_1 }}</span>
+    <span class="afterpay-instalments">${{ product.selected_or_first_available_variant.price | divided_by: 4.0 | round | money_without_currency }}&nbsp;{{ shop.currency }}</span>
+    <span class="afterpay-text2">{{ afterpay_line_2 }}</span>
+<!--     <img class="afterpay-logo" style="vertical-align:middle;" src="https://static.afterpay.com/integration/product-page/logo-afterpay-{{ afterpay_logo_theme }}.png" srcset="https://static.afterpay.com/integration/product-page/logo-afterpay-{{ afterpay_logo_theme }}.png 1x, https://static.afterpay.com/integration/product-page/logo-afterpay-{{ afterpay_logo_theme }}@2x.png 2x, https://static.afterpay.com/integration/product-page/logo-afterpay-{{ afterpay_logo_theme }}@3x.png 3x" width="100" height="21" alt="Afterpay" /> -->
+    
+    <svg class="afterpay-logo" id="SVGDoc" width="195" height="39" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:avocode="https://avocode.com/" viewBox="0 0 195 39"><defs></defs><desc>Generated with Avocode.</desc><g><g><title>Group 120</title><g><title>Path 51</title><path d="M176.47693,32.33643c-0.24829,4.73566 -5.1239,7.46982 -9.151,5.134c-3.81934,-2.21548 -7.68945,-4.34592 -11.48767,-6.59885c-3.51221,-2.0838 -4.24548,-6.19052 -1.61255,-9.10248c0.73877,-0.81686 1.78662,-1.38574 2.76074,-1.95297c3.46045,-2.01843 6.93542,-4.01407 10.43481,-5.96771c3.58313,-2.00104 7.73022,-0.20212 8.71069,3.76489c0.15649,0.63025 0.10803,1.31241 0.14038,1.97116c0.06238,1.26074 0.89392,1.77182 1.98938,1.14828c3.53674,-2.01273 7.06189,-4.04623 10.5769,-6.09628c0.93591,-0.54633 0.94873,-1.57367 0.00415,-2.12283c-3.54395,-2.06207 -7.10266,-4.10107 -10.67798,-6.10724c-1.01172,-0.5675 -1.82471,-0.05417 -1.88525,1.09952c-0.02869,0.53525 0.01379,1.07443 -0.01233,1.60989c-0.0437,0.89813 -0.76355,1.42377 -1.55688,1.03946c-1.04663,-0.50674 -2.05981,-1.10129 -3.02258,-1.75372c-0.276,-0.18674 -0.45703,-0.70264 -0.46118,-1.07047c-0.03101,-2.41364 0.85071,-4.40256 3.00757,-5.62567c1.96448,-1.11395 3.98706,-1.06424 5.95129,0.05878c3.94263,2.25439 7.93262,4.43262 11.79492,6.81723c3.98889,2.46268 3.85669,7.7449 -0.17554,10.11844c-3.83191,2.25653 -7.69507,4.46237 -11.57104,6.64343c-4.16626,2.34448 -8.81238,-0.2811 -9.02502,-5.06461c-0.01013,-0.22064 0.00146,-0.4422 -0.00415,-0.6629c-0.03625,-1.21515 -0.83972,-1.70007 -1.90637,-1.1012c-2.09009,1.17273 -4.16125,2.379 -6.23804,3.5769c-1.42114,0.8201 -2.84863,1.63062 -4.2511,2.48169c-1.0459,0.63434 -1.06604,1.60666 -0.01221,2.22046c3.46204,2.01578 6.93591,4.01004 10.4292,5.97028c1.2428,0.69711 1.9668,0.20288 1.97998,-1.24463c0.00415,-0.47336 -0.03479,-0.95203 0.02209,-1.4191c0.11267,-0.93219 0.88171,-1.37631 1.72266,-0.95282c0.9574,0.48151 1.93359,0.96976 2.76855,1.62598c0.40894,0.32178 0.5144,1.02982 0.75757,1.56308z" fill="#000000" fill-opacity="1"></path></g><g><title>Path 52</title><path d="M31.28003,29.67435v0h-4.99432v0v-15.69489v0h-2.80627v0v-4.3707c0.68842,0 1.37018,-0.02353 2.04938,0.00717c0.54053,0.0249 0.71497,-0.19974 0.71368,-0.72244c-0.00452,-1.0405 -0.01239,-2.08661 0.08044,-3.12125c0.24042,-2.67462 1.58807,-4.05026 4.271,-4.31851c1.15814,-0.11569 2.33344,-0.05847 3.50049,-0.09927c0.47998,-0.01706 0.7049,0.16434 0.67578,0.65747c-0.01849,0.315 0.00427,0.63165 -0.00281,0.94724c-0.0141,0.66135 0.18463,1.46948 -0.12677,1.93555c-0.2301,0.34454 -1.12793,0.24222 -1.72748,0.34183c-0.97327,0.16159 -1.51929,0.71054 -1.61194,1.69717c-0.05609,0.59531 -0.03931,1.19781 -0.04327,1.79715c-0.00171,0.24863 0.02924,0.49655 0.0531,0.8649c2.07532,0 4.1181,0.01624 6.15912,-0.03485c0.14618,-0.00336 0.39252,-0.49695 0.40137,-0.76889c0.04138,-1.3501 0.01843,-2.70255 0.01843,-4.12183h4.97614v0v4.93539v0h3.13617v0v4.31216v0h-3.13269c0,1.65994 0,3.16745 0,4.67538c0,1.51566 -0.01074,3.03134 0.00336,4.54691c0.01398,1.46964 0.61591,2.16891 2.05139,2.11163c1.02258,-0.04099 1.23352,0.33652 1.16956,1.24683c-0.07208,1.02884 -0.0166,2.06631 -0.0166,3.39178c-1.86847,-0.20929 -3.6452,-0.2244 -5.32111,-0.64279c-2.08258,-0.51987 -2.76477,-2.29367 -2.81287,-4.24344c-0.08087,-3.31375 -0.07764,-6.63071 -0.0321,-9.94519c0.01318,-0.93555 -0.2821,-1.17307 -1.17627,-1.13962c-1.78741,0.06686 -3.57928,0.01971 -5.4549,0.01971z" fill="#000000" fill-opacity="1"></path></g><g><title>Path 53</title><path d="M101.09979,19.61997c0.01611,3.22738 -2.42078,5.81335 -5.48828,5.82324c-3.04993,0.00983 -5.55176,-2.58841 -5.55933,-5.7731c-0.00708,-3.1919 2.4751,-5.82331 5.50366,-5.83521c3.05079,-0.01203 5.52784,2.57232 5.54395,5.78506zM90.23127,27.47163c0.28051,0.22174 0.42797,0.3216 0.55627,0.44156c3.29126,3.07437 8.75952,2.63263 11.92065,-0.35397c3.42102,-3.23257 4.30566,-7.99078 2.53723,-12.35623c-2.57275,-6.3493 -10.84058,-7.92211 -14.93213,-3.298c-0.02795,0.03128 -0.11511,0.00959 -0.29358,0.01926v-2.23233h-4.79419v28.18839h5.00574v-10.40866z" fill="#000000" fill-opacity="1"></path></g><g><title>Path 54</title><path d="M10.61051,25.44228c-3.11093,0.01489 -5.5246,-2.47433 -5.55591,-5.73062c-0.03131,-3.29605 2.39291,-5.87967 5.51303,-5.87521c3.04339,0.00452 5.51889,2.59598 5.52911,5.78824c0.00982,3.20133 -2.44312,5.80286 -5.48624,5.8176zM20.91162,9.67043h-4.72675c-0.04386,0.76953 -0.08466,1.48449 -0.12952,2.26501c-0.19699,-0.1083 -0.26352,-0.12655 -0.30386,-0.16949c-3.54321,-3.7467 -9.49402,-3.03149 -12.64859,0.254c-3.25842,3.3934 -3.99609,8.26273 -1.99594,12.5441c2.64065,5.65277 9.75146,6.95633 13.81082,3.66278c0.35273,-0.28616 0.69092,-0.59118 1.15424,-0.98843c0.04321,0.91122 0.07922,1.67065 0.11621,2.45221h4.72339z" fill="#000000" fill-opacity="1"></path></g><g><title>Path 55</title><path d="M124.04255,19.53927c0.08643,3.23596 -2.27978,5.83685 -5.37329,5.90686c-3.05201,0.06897 -5.58301,-2.45007 -5.67664,-5.64886c-0.09192,-3.16272 2.33935,-5.86425 5.36633,-5.96185c3.12182,-0.10071 5.59484,2.38129 5.68359,5.70386zM128.86589,29.66788v-19.98065h-4.82751v2.24957c-0.24096,-0.16461 -0.3761,-0.22901 -0.47534,-0.32953c-3.46557,-3.51233 -9.2008,-2.80652 -12.32623,0.25183c-3.30328,3.23254 -4.23553,8.48151 -2.13751,12.776c2.94196,6.02094 10.59974,6.96045 14.495,2.96735c0.0929,-0.09589 0.22424,-0.15503 0.47339,-0.32172v2.38715z" fill="#000000" fill-opacity="1"></path></g><g><title>Path 56</title><path d="M53.32709,17.77655c0.36108,-2.57879 2.53888,-4.24066 5.3656,-4.14468c2.38709,0.08078 4.39551,1.86834 4.57831,4.14468zM54.36755,20.91675c4.41943,0 8.83875,-0.02637 13.25702,0.02142c0.93847,0.01019 1.25439,-0.3017 1.14819,-1.18689c-0.07923,-0.65573 -0.07599,-1.32275 -0.18195,-1.97287c-0.81335,-4.98541 -4.68573,-8.35401 -9.75323,-8.50577c-5.3446,-0.15988 -9.55554,2.95111 -10.58386,7.97513c-0.77265,3.77142 -0.08136,7.23773 2.76733,10.0314c3.60852,3.53842 10.26544,3.57483 14.16302,0.52203c1.50971,-1.1821 2.60504,-2.68579 3.06659,-4.72174c-0.89007,0 -1.67847,0.04276 -2.45941,-0.00958c-1.46728,-0.09738 -2.88629,-0.12692 -3.78778,1.34726c-0.04669,0.07617 -0.13787,0.12836 -0.2149,0.18335c-1.77112,1.25971 -3.69275,1.44175 -5.65137,0.59824c-1.76129,-0.75842 -2.65545,-2.21814 -2.93481,-4.28198c0.47967,0 0.82239,0 1.16516,0z" fill="#000000" fill-opacity="1"></path></g><g><title>Path 57</title><path d="M133.98254,37.96762c0.77222,-1.60944 1.47156,-3.0802 2.1825,-4.54559c0.82593,-1.70255 1.63257,-3.41492 2.50671,-5.09229c0.35437,-0.68005 0.36035,-1.24463 0.03674,-1.94516c-2.52686,-5.46841 -5.01697,-10.95355 -7.51538,-16.43497c-0.02295,-0.05057 -0.00256,-0.12048 -0.00256,-0.32889c1.77258,0 3.55078,-0.02521 5.32617,0.03174c0.22375,0.00714 0.51404,0.41193 0.63745,0.6926c1.46436,3.3183 2.90222,6.64844 4.34814,9.97476c0.14685,0.33762 0.3031,0.67123 0.53406,1.1825c0.52856,-1.07211 0.97778,-1.96341 1.40845,-2.86389c1.3197,-2.76172 2.64807,-5.51938 3.93079,-8.29782c0.24902,-0.53946 0.5293,-0.75946 1.12952,-0.74426c1.54028,0.03906 3.08313,0.01288 4.81226,0.01288c-0.22888,0.51578 -0.38879,0.90585 -0.57239,1.28497c-4.2561,8.76654 -8.51868,17.52939 -12.7583,26.30353c-0.26953,0.55737 -0.5614,0.80646 -1.20642,0.78595c-1.53931,-0.04993 -3.08093,-0.01605 -4.79773,-0.01605z" fill="#000000" fill-opacity="1"></path></g><g><title>Path 58</title><path d="M71.34796,9.66837v0h4.69275c0.0451,0.5675 0.08508,1.08014 0.14343,1.81985c1.41321,-1.78067 3.09326,-2.4241 5.12311,-2.17294c1.3111,0.16226 1.33496,0.1763 1.33759,1.49942c0.00208,1.24615 0,2.49271 0,3.82401c-0.76581,-0.2641 -1.3717,-0.52148 -2.00244,-0.68106c-2.07373,-0.52444 -3.80359,0.57791 -4.22058,2.68457c-0.10358,0.52231 -0.14648,1.06375 -0.14874,1.59705c-0.01331,3.43982 -0.00708,6.88022 -0.00708,10.31995c0,0.34326 0,0.68607 0,1.09567h-4.91803v0z" fill="#000000" fill-opacity="1"></path></g></g></g></svg>
+    <a class="afterpay-link" href="{{ afterpay_terms_url }}" target="_blank">
+      <u class="afterpay-link-inner" style="font-size:12px;"></u>
+    </a>
+  </p>
+    <script type="text/javascript">
+      var Afterpay = {products:[]};
+      if (typeof Afterpay === 'undefined') {
+      Afterpay.loadScript = function(url, callback) {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        if (script.readyState) { // I.E.
+          script.onreadystatechange = function() {
+            if (script.readyState == 'loaded' || script.readyState == 'complete') {
+              script.onreadystatechange = null;
+              callback();
+            }
+          };
+        } else { // Others
+          script.onload = function() {
+            callback();
+          };
+        }
+        script.src = url;
+        document.getElementsByTagName('head')[0].appendChild(script);
+      };
+      Afterpay.number_format = function(number, decimals, decPoint, thousandsSep) {
+        // http://locutus.io/php/number_format/
+
+        number = (number + '').replace(/[^0-9+\-Ee.]/g, '')
+        var n = !isFinite(+number) ? 0 : +number
+        var prec = !isFinite(+decimals) ? 0 : Math.abs(decimals)
+        var sep = (typeof thousandsSep === 'undefined') ? ',' : thousandsSep
+        var dec = (typeof decPoint === 'undefined') ? '.' : decPoint
+        var s = ''
+
+        var toFixedFix = function (n, prec) {
+          var k = Math.pow(10, prec)
+          return '' + (Math.round(n * k) / k)
+          .toFixed(prec)
+        }
+
+        s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.')
+        if (s[0].length > 3) {
+          s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep)
+        }
+        if ((s[1] || '').length < prec) {
+          s[1] = s[1] || ''
+          s[1] += new Array(prec - s[1].length + 1).join('0')
+        }
+
+        return s.join(dec)
+      };
+      Afterpay.launchPopup = function($, event) {
+        event.preventDefault();
+
+        var $popup_wrapper, $popup_outer, $popup_inner, $a, $img, $close_button;
+
+        $popup_wrapper = $('#afterpay-popup-wrapper');
+
+        if ($popup_wrapper.length > 0) {
+          $popup_wrapper.show();
+        } else {
+          $popup_wrapper = $(document.createElement('div'))
+          .attr('id', 'afterpay-popup-wrapper')
+          .css({
+            'position': 'fixed',
+            'z-index': 999999999,
+            'left': 0,
+            'top': 0,
+            'right': 0,
+            'bottom': 0,
+            'overflow': 'auto'
+          })
+          .appendTo('body')
+          .on('click', function(event) {
+            Afterpay.closePopup($, event);
+          });
+
+          $popup_outer = $(document.createElement('div'))
+          .attr('id', 'afterpay-popup-outer')
+          .css({
+            'display': '-ms-flexbox',
+            'display': '-webkit-flex',
+            'display': 'flex',
+            '-webkit-justify-content': 'center',
+            '-ms-flex-pack': 'center',
+            'justify-content': 'center',
+            '-webkit-align-content': 'center',
+            '-ms-flex-line-pack': 'center',
+            'align-content': 'center',
+            '-webkit-align-items': 'center',
+            '-ms-flex-align': 'center',
+            'align-items': 'center',
+            'width': '100%',
+            'min-height': '100%',
+            'background-color': 'rgba(0, 0, 0, 0.80)'
+          })
+          .appendTo($popup_wrapper);
+
+          $popup_inner = $(document.createElement('div'))
+          .attr('id', 'afterpay-popup-inner')
+          .css({
+            'position': 'relative',
+            'background-color': '#fff'
+          })
+          .appendTo($popup_outer);
+
+          $a = $(document.createElement('a'));
+
+          {% if shop.currency == 'USD' %}
+          $a.attr('href', 'https://www.afterpay.com/purchase-payment-agreement');
+          {% else %}
+          $a.attr('href', 'https://www.afterpay.com/terms');
+          {% endif %}
+
+          $a
+          .attr('target', '_blank')
+          .css({
+            'display': 'block'
+          })
+          .appendTo($popup_inner);
+
+          $img = $(document.createElement('img'));
+
+          {% if shop.currency == 'USD' %}
+          if ($(window).width() > 640) {
+            $img.attr('src', 'https://static.afterpay.com/us-popup-medium.png');
+          } else {
+            $img.attr('src', 'https://static.afterpay.com/us-popup-small.png');
+          }
+          {% else %}
+          if ($(window).width() > 640) {
+            $img.attr('src', 'https://static.afterpay.com/lightbox-desktop.png');
+          } else {
+            $img.attr('src', 'https://static.afterpay.com/lightbox-mobile.png');
+          }
+          {% endif %}
+
+          $img
+          .css({
+            'display': 'block',
+            'width': '100%'
+          })
+          .appendTo($a)
+          .on('click', function(event) {
+            event.stopPropagation();
+          });
+
+          $close_button = $(document.createElement('a'))
+          .attr('href', '#')
+          .css({
+            'position': 'absolute',
+            'right': '8px',
+            'top': '8px'
+          })
+          .html('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" version="1.1" width="32px" height="32px"><g id="surface1"><path style=" " d="M 16 3 C 8.832031 3 3 8.832031 3 16 C 3 23.167969 8.832031 29 16 29 C 23.167969 29 29 23.167969 29 16 C 29 8.832031 23.167969 3 16 3 Z M 16 5 C 22.085938 5 27 9.914063 27 16 C 27 22.085938 22.085938 27 16 27 C 9.914063 27 5 22.085938 5 16 C 5 9.914063 9.914063 5 16 5 Z M 12.21875 10.78125 L 10.78125 12.21875 L 14.5625 16 L 10.78125 19.78125 L 12.21875 21.21875 L 16 17.4375 L 19.78125 21.21875 L 21.21875 19.78125 L 17.4375 16 L 21.21875 12.21875 L 19.78125 10.78125 L 16 14.5625 Z "/></g></svg>')
+          .appendTo($popup_inner)
+          .on('click', function(event) {
+            Afterpay.closePopup($, event);
+          });
+        }
+      };
+      Afterpay.closePopup = function($, event) {
+        event.preventDefault();
+
+        $('#afterpay-popup-wrapper').hide();
+      };
+      Afterpay.init = function($) {
+        $('.afterpay-paragraph a').on('click', function(event) {
+          Afterpay.launchPopup($, event);
+        });
+        $('body').on('change', $('form[action^="/cart/add"]'), function(event) {
+          var $form = $(event.target).closest('form');
+          var $afterpay_paragraph = null;
+          var should_show_instalments = false;
+          var selected_variant_id = parseInt($('input[name=id]:checked, select[name=id], input[name=id], hidden[name=id]', $form).val(), 10);
+          if (isNaN(selected_variant_id)) {
+            var $variant_options = $form.find('input[name=id][value], select[name=id] option[value], hidden[name=id][value]').filter(function(index, element) {
+              return $(element).attr('value').match(/^[1-9][0-9]*$/);
+            });
+            $variant_options.each(function(index, element) {
+              $.each(Afterpay.products, function(product_index, product) {
+                $.each(product.variants, function(variant_index, variant) {
+                  if (variant.id == $(element).val()) {
+                    $afterpay_paragraph = $('.afterpay-paragraph[data-product-id=' + product.id + ']');
+                    return false;
+                  }
+                });
+                if ($afterpay_paragraph !== null) {
+                  return false;
+                }
+              });
+              if ($afterpay_paragraph !== null) {
+                return false;
+              }
+            });
+          } else if (selected_variant_id > 0) {
+            $.each(Afterpay.products, function(product_index, product) {
+              $.each(product.variants, function(variant_index, variant) {
+                if (variant.id == selected_variant_id) {
+                  $afterpay_paragraph = $('.afterpay-paragraph[data-product-id=' + product.id + ']');
+                  if (variant.available && variant.price >= {{ afterpay_minimum_value_in_cents }} && variant.price <= {{ afterpay_maximum_value_in_cents }}) {
+                      should_show_instalments = true;
+                      $afterpay_paragraph.find('.afterpay-instalments').html('$' + (Math.round(variant.price / 4) / 100).toFixed(2) + '&nbsp;{{ shop.currency }}');
+                     }
+                   }
+                  });
+                });
+              }
+                     if ($afterpay_paragraph !== null) {
+                if (should_show_instalments) {
+                  if ({{ shop.currency | json }} == 'USD') {
+                    $afterpay_paragraph.find('.afterpay-text1')
+                    .html('or 4 installments of ');
+                    $afterpay_paragraph.find('.afterpay-logo')
+                    .insertAfter($afterpay_paragraph.find('.afterpay-instalments'));
+                    $afterpay_paragraph.find('.afterpay-text2')
+                    .html(' by ').insertBefore($afterpay_paragraph.find('.afterpay-logo'));
+                    $afterpay_paragraph.find('.afterpay-link-inner').html('More info');
+                  } else {
+                    $afterpay_paragraph.show();
+                  }
+                } else {
+                  if ({{ shop.currency | json }} == 'USD') {
+                    $afterpay_paragraph.show();
+
+                    $afterpay_paragraph.find('.afterpay-text1')
+                    .html('Installments by ');
+                    $afterpay_paragraph.find('.afterpay-logo')
+                    .insertAfter($afterpay_paragraph.find('.afterpay-text1'));
+                    $afterpay_paragraph.find('.afterpay-text2')
+                    .html(' available between ');
+                    $afterpay_paragraph.find('.afterpay-instalments')
+                    .html('$' + Afterpay.number_format(({{ afterpay_minimum_value_in_cents }}) / 100, 2) + '&nbsp;{{ shop.currency }} - $' + Afterpay.number_format(({{ afterpay_maximum_value_in_cents }}) / 100, 2) + '&nbsp;{{ shop.currency }}')
+                    .insertAfter($afterpay_paragraph.find('.afterpay-text2'));
+                    $afterpay_paragraph.find('.afterpay-link-inner').html('Learn more');
+                  } else {
+                    $afterpay_paragraph.hide();
+                  }
+                }
+              }
+            });
+            {% if product.selected_or_first_available_variant.available and shop.currency == 'USD' %}
+            {% if product.selected_or_first_available_variant.price < afterpay_minimum_value_in_cents or product.selected_or_first_available_variant.price > afterpay_maximum_value_in_cents %}
+            $('form[action^="/cart/add"]').trigger('change');
+            {% endif %}
+            {% endif %}
+          };
+          if (typeof jQuery === 'undefined' || parseFloat(jQuery.fn.jquery) < 1.7) {
+            Afterpay.loadScript('https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js', function() {
+              var jQuery_1_12_4 = jQuery.noConflict(true);
+              Afterpay.init(jQuery_1_12_4);
+            });
+          } else {
+            Afterpay.init(jQuery);
+          }
+        }
+                     Afterpay.products.push({{ product | json }});
+  </script>
+                <!-- End Afterpay Liquid Snippet for Shopify v2.5.2 -->
+              </div>
+
+              <div><strong>SKU:</strong> {{variant.sku}}</div>
+              
+              <div class="price-qty">
+                <h3 class="color6 price" id="price-field" >{{ variant.price | money }}{% if variant.price < variant.compare_at_price %} <del>{{ variant.compare_at_price | money }}</del>{% endif %}</h3>
+                {% if product.compare_at_price > product.price %}
+                {% assign save_price = product.compare_at_price | minus: product.price | times: 100.0 | divided_by: product.compare_at_price %}
+                <h3 class="discount_label"><span>You are save {{save_price}}%</span></h3>
+                {% endif %}
+              </div>
+              
+              <!--   start code for size chart app -->
+              <div class="zifyapp-sc" id="zifyapp-sc-210"></div>
+              <!--   end code for size chart app -->	
+              
+              
+              <div class=" qty">
+                <a class="minus">-</a>
+                <input id="ins" class="qty_input" type="text" name="quantity" value="1" min="1" >
+                <a class="plus">+</a>
+              </div>
+              {% assign hide_default_title = false %}
+              {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
+              {% assign hide_default_title = true %}
+              {% endif %}
+              
+              <div id="quantity position-r" {% if hide_default_title %}style="display: none;"{% endif %}>
+                <select id="product_select_{{product.id}}" name="id" class="select select_new_add">
+                  {% for variant in product.variants %}
+                  <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+                  {% endfor %}
+                </select>
+                <div class="swatch_product" style="display: grid;">  
+                  {% if product.available and product.variants.size >= 1 %}
+                  {% for option in product.options %}
+                  {% include 'swatch' with option %}
+                  {% endfor %}
+                  {% endif %}
+                </div>
+              </div>
+              
+              <!-- Add monogram option -->
+              <div class="monogram_option">
+                <div class="mono_option">
+                  <label for="monogram_option">Add Monogram Option: (maxlength - 5 characters)</label>
+                  <input type="text" id="monogram_option" name="properties[Monogram Option]" maxlength="5" >
+                </div>
+                {% assign mono_pro = all_products['monogram-product'] %}
+                <div class="monogram_opt"> 
+                  <select id="product_select___{{mono_pro.id}}" class="select select_new_add_mono" data-id="product_select___{{mono_pro.id}}">
+                    {% for variant in mono_pro.variants %}
+                    <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+               {% for product_option in mono_pro.options_with_values %}
+                <h6 class="item-title">Select {{ product_option.name | capitalize }}</h6>
+                {% if product_option.name == 'Color' %}
+                <div class="color-label">
+                  <p class="color-name"></p>
+                </div>
+                {% endif %}
+                {% if product_option.name == 'Size' %}
+                <div class="color-label_size">
+                  <p class="color-name_size"></p>
+                </div>
+                {% endif %}
+                {% if product_option.name == 'Color' %}
+                <div class="color_options_div">
+                  {% for value in product_option.values %}
+                  <input id="option--{{value}}_{{ forloop.index0 }}" data-value="{{value}}" data-color="{{ product_option.name }}" class="input_class_mono" type="radio" name="color_radio" data-id="{{ variant.id }}" value="{{ value | escape }}"/>
+                  <label for="option--{{value}}_{{ forloop.index0 }}" class="input_class_mono_label" style="background-color: {{value}}"><span class="input_mono_value">{{value}}</span></label>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% if product_option.name == 'Size' %}
+                <div class="color_options_div">
+                  {% for value in product_option.values %}
+                  <input id="option--{{value}}_{{ forloop.index0 }}" data-value="{{value}}" data-size="{{ product_option.name }}" class="input_class_mono" type="radio" name="color_size" data-id="{{ variant.id }}" value="{{ value | escape }}"/>
+                  <label for="option--{{value}}_{{ forloop.index0 }}" class="input_class_mono_label_size"><span class="input_mono_value_size">{{value}}</span></label>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                {% endfor %} 
+                <input type="hidden" name="properties[Product Name]" value="{{product.title}}">
+                <input type="hidden" name="properties[Bundle ID]" value="{{ 'now' | date:"%Y%m%d%H%M%s" }}" class="bundleId">
+              </div>
+              <style>
+                .selector-wrapper{display: none !important;}
+              </style>
+              <!-- end Add monogram option -->
+              
+              
+                            
+              {% comment %}
+              <!--  this is liquid - default code for select na bhag padava === without JS (option selection) - https://prnt.sc/1qcwbac -->
+              <select id="product-select" name='id' >
+                {% for variant in product.variants %}
+                <option value="{{ variant.id }}" data-value="{{ variant.title }}" class="{{ variant.title }}" {% if variant == product.selected_variant %}selected="selected"{% endif %}>
+                  {{ variant.title }}
+                </option>
+                {% endfor %}
+              </select> 
+              {% for product_option in product.options_with_values %}
+              <label>
+                {{ product_option.name }}
+                <select class="product_variant_change">
+                  {% for value in product_option.values %}
+                  <option value="{{ value }}" {% if product_option.selected_value == value %}selected{% endif %}>
+                    {{ value }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </label>
+              {% endfor %}
+              {% endcomment %}
+
+              <div class="other_color" style="display: flex;">
+                {% capture oc %}
+                {% for tag in product.tags %}
+                {% if tag contains '#' %}
+                {% assign p = tag | remove: '#' %}
+                {% assign pro = all_products[p] %}
+                <div class="otherColor" data-handle="{{ pro.handle }}">
+                  <a>
+                    {% assign hasCI = false %}
+                    <img loading="lazy" class="{% if pro.handle == product.handle %}active{% endif %}" src="{{ pro.featured_image | img_url : '50x50', crop: 'center' }}" alt="" />
+                  </a>
+                </div>
+                {% assign hascolor = true %}
+                {% endif %}
+                {% endfor %}
+                {% endcapture %}
+                {% if hascolor %}{{ oc }}{% endif %}
+              </div>
+
+              <!--  same above logic but change the code and no need jquery(Redirect on URL[a href={{pro.url}}]) -->
+              {% comment %}
+              {% assign hascolor = false %}
+              {% capture oc %}
+              <div class="relatedColor" style="display: flex; padding-bottom: 40px;">
+                {% for tag in product.tags %}
+                {% if tag contains '#' %}
+                {% assign p = tag | remove: '#' %}
+                {% assign pro = all_products[p] %}
+                <div class="otherColor" style="padding-right: 10px;">
+                  <a href="{{ pro.url }}" title="{{ pro.title }}" class="{% if product.handle == p %}border{% endif %}" >
+                    {% assign hasCI = false %}
+                    {% for image in pro.images %}
+                    {% if image.alt contains 'color' %}
+                    <img loading="lazy" src="{{ image | img_url : '50x50', crop: 'center' }}" alt="" />
+                    {% assign hasCI = true %}
+                    {% break %}
+                    {% endif %}
+                    {% endfor %}
+                    {% unless hasCI %}
+                    <img loading="lazy" src="{{ pro.featured_image | img_url : '50x50', crop: 'center' }}" alt="" />
+                    {% endunless %}
+                  </a>
+                </div>
+                {% assign hascolor = true %}
+                {% endif %}
+                {% endfor %}
+              </div>
+              {% endcapture %}
+              {% if hascolor %}{{ oc }}{% endif %}
+              {% endcomment %}
+              
+              <!--  start code =  During add to cart (product) with two material or product get free - show in mini cart and cart  -->
+              <div class="meta_new_image_fun">
+                {% assign size = product.metafields.meta_variant_image.meta_variant_image_key.size %}
+                <div class="meta_new_my_cl">
+                  {% if size > 0 %}
+                  <p>Cotton</p>
+                  <div class="metafield_variant_img">
+                    {% for i in  (0..size) %}
+                      <input type="radio" name="properties[Selected Option 1]"  id="id_{{ i }}" value="{{product.metafields.meta_variant_image.meta_variant_image_key[i]}}" hidden="hidden">
+                      {% if product.metafields.meta_variant_image.meta_variant_image_key[i] != blank %}
+                      <div class="meta_image">
+                        <label for="id_{{ i }}">
+                          <img  loading="lazy" src="{{product.metafields.meta_variant_image.meta_variant_image_key[i]}}">
+                        </label>
+                      </div>
+                      {% endif %}
+                    {% endfor %}	
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="print_msg_flex">
+                  <div class="print_cotton_msg"></div>
+                  <div class="put_image"></div>
+                </div>
+                {% assign size = product.metafields.meta_image_2.meta_img_2.size %}
+                <div class="meta_new_my_cl">
+                  {% if size > 0 %}
+                  <p>Ployster</p>
+                  <div class="metafield_variant_img">
+                    {% for i in  (0..size) %}
+                    <input type="radio" id="sec_id_{{ i }}" name="properties[Selected Option 2]" value="{{product.metafields.meta_image_2.meta_img_2[i]}}" hidden="hidden">
+                    {% if product.metafields.meta_image_2.meta_img_2[i] != blank %}
+                      <div class="meta_second_image">
+                        <label for="sec_id_{{ i }}">
+                          <img  loading="lazy"  src="{{product.metafields.meta_image_2.meta_img_2[i]}}">
+                        </label>
+                      </div>
+                    {% endif %}
+                    {% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="print_msg_flex">
+                  <div class="print_cotton_msg_new"></div>
+                  <div class="put_image_sec"></div>
+                </div>
+              </div>
+              <!--  end code =  During add to cart (product) with two material or product get free - show in mini cart and cart  -->
+              
+              <div class="flex_add_field">
+                <div class="add_filed">
+                  <label for="name"><b>NAME</b>: </label>
+                  <input type="text" name="properties[Name]" id="name" class="input_name">
+                </div>
+                <div class="add_filed">
+                  <label><b>CHOOSE OPTIOIN</b>: </label><br>
+                  <input type="radio" name="properties[Gender]" value="Female">Female<br>
+                  <input type="radio" name="properties[Gender]" value="Male">Male
+                </div>
+                <div class="add_filed">
+                  <label><b>SELECT CHECKBOX</b>: </label><br>
+                  <input type="checkbox" name="properties[Payment]" value="COD">COD<br>
+                  <input type="checkbox" name="properties[Payment]" value="Net Banking">Net Banking
+                </div>
+                <div class="add_filed">
+                  <label><b>CHOOSE OPTIOIN</b>: </label><br>
+                  <select id="product_select" name='properties[Quality]' class="select_input">
+                    <option value="Best Quality">Best Quality</option>
+                    <option value="Medium Quality">Medium Quality</option>
+                    <option value="Low Quality">Low Quality</option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- start Timer display -->
+              <div class="product-bar">
+                {%if product.metafields.timer_name.timer_key != blank %}
+                <div class="timer_progress">
+                  <div id="progress_bar"></div>
+                  <center>
+                    <div id="timer"></div>
+                  </center>        
+                </div>
+                {%endif%}
+              </div>
+              <!-- end Timer display -->
+              
+              <div class="add-to-cart-button button6">
+                <!--  <input type="submit" value="ADD TO CART" id="addtocart"  class="btn" style="width: 100%;"> -->
+                <button id="add-to-cart" class="add_cart_btn">Add to Cart</button>
+              </div> 
+              
+              {{ form | payment_button }}      
+
+              {% endform %}
+
+              {{ 'component-pickup-availability.css' | asset_url | stylesheet_tag }}
+              {%- assign pick_up_availabilities = product.selected_or_first_available_variant.store_availabilities | where: 'pick_up_enabled', true -%}
+              <pickup-availability class="product__pickup-availabilities no-js-hidden"
+                                   {% if product.selected_or_first_available_variant.available and pick_up_availabilities.size > 0 %} available{% endif %}
+                                   data-base-url="{{ shop.url }}{{ routes.root_url }}"
+                                   data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                                   data-has-only-default-variant="{{ product.has_only_default_variant }}"
+                >
+                <template>
+                  <pickup-availability-preview class="pickup-availability-preview">
+                    {% render 'icon-unavailable' %}
+                    <div class="pickup-availability-info">
+                      <p class="caption-large">{{ 'products.product.pickup_availability.unavailable' | t }}</p>
+                      <button class="pickup-availability-button link link--text underlined-link">{{ 'products.product.pickup_availability.refresh' | t }}</button>
+                    </div>
+                    </div>
+                </template>
+              </pickup-availability>
+            </div>
+            <script src="{{ 'pickup-availability.js' | asset_url }}" defer="defer"></script>
+              
+            </div>
+            <div class="product-description">
+              <h5>DESCRIPTION</h5>
+              <div class="desc">
+                <p>{{ product.description }}</p>
+              </div>
+            </div>
+            <!-- start metafield code -->
+            {% comment %}
+            <div class="meta_field">
+              <h3>Metafield: </h3>
+              {% assign materials = product.metafields.materials.material %}
+              {% if materials != blank %}
+              {% assign mata = materials | split: ',' | uniq %}
+              {% for i in mata %}
+              {{i}} : 
+              {{ shop.metafields.materials_desc[i] }}
+              {% endfor %}
+              {% endif %}
+            </div>
+            {% endcomment %}
+            <div class="meta_color">
+              <h5>META-DESCRIPTION</h5>
+              <div class="color_desc">
+              </div>
+              <h5>META-COLOR</h5>
+              <div class="color_desc1">
+              </div>
+            </div>
+            <!-- end metafield code -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <hr class="product-sepline">
+</main>
+{% render 'linked-option' %}
+<style>
+  .swatch{
+    margin: 0;
+  }
+  .color6, .discount_label{
+    font-size: 20px;
+  }
+  .title_name{
+    font-size: 30px;
+  }
+  .discount_label{
+    padding-left: 5px;
+  }
+  .color6 .money{
+    padding-right: 10px;
+  }
+  .color6 del{
+    color: #e4a756;
+  }
+  .plus{
+    padding: 8px;
+  }
+  .minus{
+    padding: 8px;
+  }
+  .main_img_p{
+    background-image: url(https://cdn.shopify.com/s/files/1/0427/3936/8087/files/shop-header.png?v=1598257201");
+  }
+  video.video2{
+    width: 224px;
+  }
+  .color_desc1{
+    font-weight: bold;
+  }
+  .product-description h5:before{
+    content: '-';
+    font-size: 20px;
+    position: absolute;
+    right: 20px;
+    top: 0;
+    bottom: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+    line-height: 1.3;
+    transition: all ease-in-out 0.3s;
+  }
+  .disabled{
+    cursor: no-drop !important;
+  }
+  .discount_label span{
+    color: #03a203;
+  }
+  .add_filed{
+    padding: 5px;
+    display: flex;
+    align-items: center;
+  }
+  .add_filed .input_name{
+    border: 2px solid #CBB682; 
+    color: #CBB682;
+    font-size: 20px;
+  }
+  .select_input{
+    border: 2px solid #CBB682; 
+    color: #CBB682;
+    font-size: 20px;
+    font-family: inherit;
+  }
+  .add_filed label{
+    padding-right: 10px;
+  }
+  .static_checkout{
+    border: 0;
+    font-weight: "DIN-Bold";
+    border-radius: 0;
+    text-align: center;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1.3;
+    letter-spacing: 1;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    min-width: 208px;
+    color: #fffcf8;
+    letter-spacing: 1px;
+    background: #204B6E;
+    color: #ffffff;
+    width: 100%;
+    font-family: "DIN-Bold";
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin-top: 5px;
+  }
+  .static_checkout:hover{
+    background: #7CA7AD;
+    color: #ffffff;
+  }
+  .metafield_variant_img{
+    display: flex;
+  }
+  .meta_image, .meta_second_image{
+    width: 100%;
+    margin: 5px;
+  }
+  .active_border_new{
+    border: 2px solid black;
+  }
+  .put_image, .put_image_sec{
+    width: 10%;
+  }
+  .print_msg_flex {
+    display: flex;
+    align-items: center;
+  }
+  .print_cotton_msg, .print_cotton_msg_new{
+    padding-right: 10px;
+  }
+</style>
+<script>
+  
+//  start this is liquid - default code for select na bhag padava === without JS (option selection) - https://prnt.sc/1qcwbac
+/* $(document).ready(function(){
+    var all_variants = [];
+    {% for variant in product.variants %}
+    all_variants.push('{{ variant.title }}');
+    {% endfor %}                      
+                      
+    $('body').on('change',".product_variant_change",function(e){
+      var vals = [];
+      $('.product_variant_change').each(function(index,val){
+        vals.push($(val).val());
+      });
+      vals= vals.join(" / ");
+      if(all_variants.indexOf(vals) != -1){
+        var v = $("#product-select").find('option[data-value="'+vals+'"]').val();
+        $("#product-select").val(v);
+        
+        $.getJSON("/variants/"+v+".js",function(data){
+          $('.add_cart_btn').text("add to cart").removeAttr("disabled","disabled").removeClass("disabled");
+        });
+      }else{
+        alert("variant not available");
+        $('.add_cart_btn').text("unavailable").addAttr("disabled","disabled").addClass("disabled");
+      }
+
+    });
+  }); */
+//  end this is liquid - default code for select na bhag padava === without JS (option selection) - https://prnt.sc/1qcwbac
+
+ 
+  
+  $(".change").on("click",function(){
+    var s=$(this).attr("src");
+    $("#image").attr("src",s);
+  });
+  
+  /*===============   one issue is = one code is work at one time "(change swatch image / other produt as swatch)"  solution is any one code comment/put first in selectcallback function   ================*/
+  
+  var selectCallback = function(variant, selector) {
+    var money_format = "{{ shop.money_format }}";
+    
+     var val = selector.product.id;
+     var price='#p'+val+' .price';
+     var btn =  '#p'+val+' .add_cart_btn';
+    
+    var d = new Date().getTime();
+    var random = Math.floor((Math.random() * d * 10) + 1);
+    $('.bundleId').val(random);
+    
+    /* start code for on change swatch option then change image (diff color) (simple code only change image with all diff color variant image) */
+    //     var index_image = variant.featured_image.position - 1;                                                   
+    //     $('.product_gallery').slick('slickGoTo', index_image);
+    //     $('.image_slick').slick('slickGoTo', index_image);
+    /* end code for on change swatch option then change image (diff color) (simple code only change image with all diff color variant image) */
+    
+    /* this code comment for make code "link option with product option" */
+    
+//     if (variant) {
+//       if (variant.available) {
+//         // Selected a valid variant that is available.
+//         $('#add-to-cart').removeClass('disabled').removeAttr('disabled').val('Add to Cart').fadeTo(200,1);
+//       } else {
+//         // Variant is sold out.
+//         $('#add-to-cart').val('Sold Out').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+//       }
+//       // Whether the variant is in stock or not, we can update the price and compare at price.
+//       if ( variant.compare_at_price > variant.price ) {
+//         $(price).html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, "") +'</span>'+'&nbsp;<s class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, "")+ '</s>');
+//       } else {
+//         $(price).html('<span class="product-price">'+ Shopify.formatMoney(variant.price, "") + '</span>' );
+//       }
+//     } else {
+//       // variant doesn't exist.
+//       $('#add-to-cart').val('Unavailable').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+//     }
+
+    
+    var form = jQuery('#' + selector.domIdPrefix).closest('form');
+    // BEGIN SWATCHES
+    if (variant) {
+      for (var i=0,length=variant.options.length; i<length; i++) {
+        var radioButton = form.find('.swatch[data-option-index="' + i + '"] :radio[value="' + variant.options[i] +'"]');
+        if (radioButton.size()) {
+          radioButton.get(0).checked = true;
+        }
+      }
+    }
+    // END SWATCHES
+    
+    /* start code for static chekout button - in shopify "form" */
+    if(variant){
+      $('body').on('click', '.static_checkout', function(e){
+        var qty = $('.qty input').val();
+        {% for variant in product.variants %}
+        var var_id= '{{ variant.id }}';
+        if(variant.id == var_id){
+          var href = '/cart/'+var_id+':'+qty;
+          $(this).attr('href', href);
+        }
+        {% endfor %}
+      });
+    }
+    /* end code for static chekout button - in shopify "form" */
+    
+    
+    /* start code for change swatch option with same color image (change image on hover variant)==============================*/
+    /*$('.swatch_click').hover(function(){
+      var i,image_change=0;      
+      for(i=0;i<selector.selectors.length;i++){
+        if(selector.selectors[i].name == 'Color'){
+          image_change=1;
+        }    
+      }
+      if(image_change==1){
+        var alt ="", value=""; 
+        if(variant.featured_image){
+          value=$(this).data('value');
+        }
+        else{
+          alt= variant.option1;          
+        }
+        var images_zoom = '<div class="image_slick">', images_thumb = '<div class="product_gallery">';
+        {% for image in product.images %}
+        var img_alt="{{ image.alt }}";
+        if(img_alt == value){
+          images_zoom+='<div class="fan-fav-img">\
+                        <img src="{{ image | img_url: 'master' }}" alt="{{ image.alt }}">\
+                          </div>';
+                          images_thumb+='<div class="sub-pro-img">\
+                        <img src="{{ image | img_url:'master' }}" alt="{{ image.alt }}">\
+                          </div>';
+           }
+        {% endfor %}
+        $('.product-gallery').html(images_zoom+"</div>"+images_thumb+"</div>");
+        slick_slider();
+      }     
+      function slick_slider(){
+        $(".image_slick").slick({
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          fade: true,
+          asNavFor: '.product_gallery'
+        });
+        $(".product_gallery").slick({
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          asNavFor: '.image_slick',
+          centerMode: true,
+          focusOnSelect: false,
+          responsive: [
+            {
+              breakpoint: 768,
+              settings:{
+                slidesToShow: 1,
+                slidesToScroll: 1
+              }
+            }
+          ]	
+        });
+      }
+    }, function(){
+    });*/
+    /* end code for change swatch option with same color image (change image on hover variant)==============================*/
+    
+    /* start code for change swatch option with same color image (see above code change on hover)==============================*/
+     var i,image_change=0;      
+     for(i=0;i<selector.selectors.length;i++){
+       if(selector.selectors[i].name == 'Color'){
+         image_change=1;
+       }    
+     }
+     if(image_change==1){
+       var alt =""; 
+       if(variant.featured_image){
+         alt=variant.featured_image.alt;
+       }
+       else{
+         alt= variant.option1;          
+       }
+       var images_zoom = '<div class="image_slick">', images_thumb = '<div class="product_gallery">';
+       {% for image in product.images %}
+       var img_alt="{{ image.alt }}";
+       if(img_alt == alt){
+         images_zoom+='<div class="fan-fav-img">\
+           <img  loading="lazy" src="{{ image | img_url: 'master' }}" alt="{{ image.alt }}">\
+             </div>';
+             images_thumb+='<div class="sub-pro-img">\
+           <img  loading="lazy" src="{{ image | img_url:'master' }}" alt="{{ image.alt }}">\
+             </div>';
+       }
+       {% endfor %}
+       $('.product-gallery').html(images_zoom+"</div>"+images_thumb+"</div>");
+       slick_slider();
+     }     
+    function slick_slider(){
+      $(".image_slick").slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        fade: true,
+        asNavFor: '.product_gallery'
+      });
+      $(".product_gallery").slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '.image_slick',
+        centerMode: true,
+        focusOnSelect: false,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings:{
+              slidesToShow: 1,
+              slidesToScroll: 1
+            }
+          }
+        ]	
+      });
+    }     
+    /* end code for change swatch option with same color image (see above code change on hover)==============================*/
+    
+    /* start code for on change swatch option then change image - """without use any alt tag of image""" */
+    /*$('body').on('change',".swatch input[type=radio]",function(){
+       var alt=""; 
+       {% for variant in product.variants %}
+       var var_id= '{{ variant.id }}';   
+       var i = $(this).data('id');
+       if(i == var_id){
+         alt= '{{variant.image.src }}';
+       }
+       {% endfor %}
+       {% for media in product.media %}
+       var img_alt="{{ media.src }}";
+       if(img_alt == alt){
+         var number = '{{ forloop.index0 }}';
+         $('.image_slick').slick('slickGoTo', number);
+         $('.product_gallery').slick('slickGoTo', number);
+       }
+       {% endfor %}
+     });*/
+    /* end code for on change swatch option then change image - """without use any alt tag of image""" */
+    
+    // this code for metafield
+    if (variant) {
+      {% for variant in product.variants %}
+      var var_id = '{{ variant.id }}';    
+      if(variant.id == var_id){
+        var html = '{{variant.metafields.image.image}}';
+        var html1 = '{{variant.metafields.color.color}}';
+        if (html && html1){
+          $('.color_desc').html(html);
+          $('.color_desc1').html(html1);
+          $('.meta_color').css('display','block');
+        }
+        else{
+          $('.meta_color').css('display','none');
+        }
+      }
+      {% endfor %}
+    }
+    
+
+    /* start code for product select as swatch */
+    $('body').on('click', '.otherColor', function(e){
+      e.preventDefault();
+      if($(this).find('a img').hasClass('active')){
+        e.prevetDefault();
+      }
+      else{
+      }
+      var url="";
+      var url1='/products/'+$(this).data('handle')+'.js';
+      jQuery.getJSON(url1, function(product) {
+        url=product.url;
+        url+='?view=alternate';
+        $.get(url,function(data){
+          //           $('.main-content').html(data);
+          $('.proalternate').html(data);
+        });
+        var url_s = product.handle;
+        window.history.replaceState(null,null,product.url);
+      });
+    });
+    /* end code for product select as swatch */
+
+    
+
+    /* start code for "link option with pick an option" */
+    var f = 0;
+    if(f == 0){
+      form.find('.swatch').each(function(index,val){
+        if($(val).find('input[type="radio"]:checked').length == 0){
+          $(btn).text("select "+$(val).data("value")+" option");
+          $(btn).addClass('disabled').attr('disabled','disabled').fadeTo(1,0.3); 
+          f+= 1;
+          return false;
+        }
+      });
+    }   
+    if(f > 0){
+      return false;
+    } 
+    else {
+      if (variant) {
+        if (variant.available) {
+          // Selected a valid variant that is available.
+          $(btn).removeClass('disabled').removeAttr('disabled').text('Add to Cart').fadeTo(200,1);
+        } else {
+          // Variant is sold out.
+          $(btn).val('Sold Out').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+        }
+        // Whether the variant is in stock or not, we can update the price and compare at price.
+        if ( variant.compare_at_price > variant.price ) {
+          $(price).html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, money_format) +'</span>'+'&nbsp;<s class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, money_format)+ '</s>');
+        } else {
+          $(price).html('<span class="product-price">'+ Shopify.formatMoney(variant.price, money_format) + '</span>' );
+        }
+      } else {
+        // variant doesn't exist.
+        $(btn).val('Unavailable').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+      }
+   }
+   /* end code for "link option with pick an option" */ 
+    
+};
+
+  //   initialize multi selector for product
+  jQuery(function($) {
+    new Shopify.OptionSelectors("product_select_{{product.id}}", { product: {{ product | json }} , onVariantSelected: selectCallback, enableHistoryState: false });
+  });
+  // for mono product 
+  jQuery(function($) {
+    new Shopify.OptionSelectors("product_select___{{mono_pro.id}}", { product: {{ mono_pro | json }} , onVariantSelected: selectCallback, enableHistoryState: false });
+  });
+
+  /* start code for monogram option */
+  $(document).ready(function(){
+    $('body').on('keyup', '.monogram_option input[type="text"]', function(e){
+      e.preventDefault();
+      var ss = $(this).val();
+      $('.product-gallery').find('.monogram_text_update').html("<span class='text_m_add'>"+ss+"</span>");
+    });
+    $('body').on('click', '.color_options_div :checked:input[type="radio"]', function(e){
+      e.preventDefault();
+      var color = $(this).val();
+      var font = $(this).val();
+      $('.product-gallery').find('.monogram_text_update').css('color',color);
+      $('.product-gallery').find('.monogram_text_update').find('svg').css('fill',color);
+      $('.product-gallery').find('.monogram_text_update').find('svg').find('path').css('fill',color);
+      $('.product-gallery').find('.monogram_text_update').css('font-family',font);
+    });
+    $('.input_class_mono').on("click",function(){
+      var value = $(this).attr('data-value');
+      var color_a = $(this).attr('data-color');
+      var size_a = $(this).attr('data-size');
+      if(color_a == 'Color'){
+        $('.color-label').find('.color-name').html(value);
+      }
+      if(size_a == 'Size'){
+        $('.color-label_size').find('.color-name_size').html(value);
+      }
+    });
+    $('body').on('click', '.add-to-cart-button', function(e){
+      e.preventDefault();
+      if($(this).closest('form').find('#monogram_option').val().length > 0){
+        console.log("If Part");
+        var bundleID = $(this).parents('form').find('.bundleId').val();
+        var mono_id = $('.select_new_add_mono').val();
+        var data_f = $('.select_new_add').val();
+        var link = $(this).closest('form');
+        $.ajax({
+          type:"post",
+          dataType:"json",
+          data:{"id": data_f, "quantity": 1 , "properties":{ "Bundle ID": bundleID, "Other_pro_id": mono_id }},
+          url:"/cart/add.js",
+          async: false
+        });
+        $.ajax({
+          dataType: 'JSON',
+          type: 'post',
+          data: $(link).serialize(),
+          url: '/cart/add.js',
+          async: false,
+          success: mono_addItem
+        });
+        function mono_addItem(){
+          var url ='{{shop.url}}';
+          var hh = url+'/cart?view=mini';
+          $.get(hh, function(data){
+            $('.cart_pop').html(data);
+          });
+          $('.cart_popup').show();
+          $.getJSON('/cart.js', function(cart){
+            $('.cart_count').find('.item_count').text(cart.item_count);
+          });
+        }
+      }
+      else{
+        console.log("Else Part");
+        /* start add-to-cart using ajax not go(refresh) in cart page */
+        var link = $(this).closest('form');
+        $.ajax({
+          dataType: 'JSON',
+          type: 'post',
+          data: $(link).serialize(),
+          url: '/cart/add.js',
+          success: addItem
+        });
+        function addItem(){
+          var url ='{{shop.url}}';
+          var hh = url+'/cart?view=mini';
+          $.get(hh, function(data){
+            $('.cart_pop').html(data);
+          });
+          $('.cart_popup').show();
+          $.getJSON('/cart.js', function(cart){
+            $('.cart_count').find('.item_count').text(cart.item_count);
+          });
+        }
+        /* end add-to-cart using ajax not go(refresh) in cart page */
+      }
+    });
+  });
+  /* end code for monogram option */
+
+  
+  
+  
+  
+  
+  
+  /* start code for product price change on quantity change (+/-) */
+  $(".plus").on("click",function(){
+    var q=$(this).parent().find("#ins").val();
+    q=parseInt(q);   
+    q=q+1;
+    $(this).parent().find("#ins").val(q);
+    var price = '{{product.price}}';
+    var multiply = q * price;
+    var money_format = '{{shop.money_format}}';
+    $(this).parents().find(".price-qty").find('.price').html(Shopify.formatMoney(multiply, money_format));
+  });
+  $(".minus").on("click",function(){
+    var q=$(this).parent().find("#ins").val();
+    q=parseInt(q);   
+    q=q-1;
+    if(q<1)
+    { q=1;
+    }
+    $(this).parent().find("#ins").val(q);
+    var price = '{{product.price}}';
+    var multiply = q * price;
+    var money_format = '{{shop.money_format}}';
+    $(this).parents().find(".price-qty").find('.price').html(Shopify.formatMoney(multiply, money_format));
+  });
+  /* end code for product price change on quantity change (+/-) */
+  /* start code for product price change on input filed (add quantity) */
+  $('body').on('focus, blur, keyup','.qty_input', function(e){
+    var val = parseInt($(this).val());
+    if(val<1)
+    { val=1;
+     $(this).val(1);
+    }
+    var price = '{{product.price}}';
+    var multiply = val * price;
+    var money_format = '{{shop.money_format}}';
+    $(this).parents().find(".price-qty").find('.price').html(Shopify.formatMoney(multiply, money_format));
+  });
+  /* end code for product price change on input filed (add quantity) */
+
+  
+// aa (niche ni addtocart event) code comment mathi bar kadhvano che hamna khali monogram mate comment ma che  =================================================================================
+  
+  /* start add-to-cart using ajax not go(refresh) in cart page */
+  $('body').on('click', '.add_cart_btn', function(e){
+    e.preventDefault();
+    var link = $(this).closest('form');
+    $.ajax({
+      dataType: 'JSON',
+      type: 'post',
+      data: $(link).serialize(),
+      url: '/cart/add.js',
+      success: addItem
+    });
+    function addItem(){
+      var url ='{{shop.url}}';
+      var hh = url+'/cart?view=mini';
+      $.get(hh, function(data){
+        $('.cart_pop').html(data);
+      });
+      $('.cart_popup').show();
+      $.getJSON('/cart.js', function(cart){
+        $('.cart_count').find('.item_count').text(cart.item_count);
+      });
+    }
+  });
+  /* end add-to-cart using ajax not go(refresh) in cart page */
+  
+  /* start code =  During add to cart (product) with two material or product get free - show in mini cart and cart */
+  $('body').on('click', '.meta_image',function(){
+    $('.meta_image').removeClass('active_border_new');
+    $(this).addClass('active_border_new');
+    if($(this).hasClass('active_border_new')){
+      $('.meta_new_image_fun').find('.print_cotton_msg').html("You have selected one material - Cotton");
+      var main_id = $(this).find('img').attr('src');
+      var data_image = "<img loading='lazy' src='"+main_id+"'>";
+      $('.put_image').html(data_image);
+    }
+  });
+  $('body').on('click', '.meta_second_image',function(){
+    $('.meta_second_image').removeClass('active_border_new');
+    $(this).addClass('active_border_new');
+    if($(this).hasClass('active_border_new')){
+      $('.meta_new_image_fun').find('.print_cotton_msg_new').html("You have selected one material - Polyster");
+      var main_sec_id = $(this).find('img').attr('src');
+      var data_image = "<img loading='lazy' src='"+main_sec_id+"'>";
+      $('.put_image_sec').html(data_image);
+    }
+  });
+  /* end code =  During add to cart (product) with two material or product get free - show in mini cart and cart */
+  
+  //  start toggle description
+  $('body').on('click', '.product-description h5', function(){
+    $('.product-description .desc').toggleClass('open');
+    $(this).toggleClass("active");
+  });
+  //   end toggle description
+</script>
+<script>
+  var y = $('.image_slick').find('.youtube_video');
+  $.each(y,function(index, val){
+    var src = $(val).attr('src');
+    var p = "/embed/";
+    var split_src = src.split(p)[1];
+    var sub_split_src = split_src.split("?")[0];
+    var change_src = src+"autoplay=1&mute=1&loop=1&playlist="+sub_split_src;
+    $(val).attr('src', change_src);
+    $(val).attr('width','100%');
+    $(val).attr('height', '50%');
+  });
+  
+  $('.video').attr("width","100%");
+  $('.video').attr("height","21%");
+  
+  
+  $(".image_slick").slick({
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    fade: true,
+    asNavFor: '.product_gallery'
+  });
+  $(".product_gallery").slick({
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    asNavFor: '.image_slick',
+    centerMode: true,
+    focusOnSelect: false,
+    responsive: [
+      {
+        breakpoint: 768,
+        settings:{
+          slidesToShow: 1,
+          slidesToScroll: 1
+        }
+      }
+    ]	
+  });
+  
+  // When the slide is changing
+  function playPauseVideo(slider, play){
+    var slideType, player;
+    slideType = slider.attr("class").split(" ")[1];
+    player = slider.find("iframe").get(0);    
+    var play1  = play + "Video";
+
+    if(slideType == 'youtube') {
+      command = {
+        "event": "command",
+        "func": play1
+      };
+    }else if(slideType == 'video'){
+      var video = slider.children("video").get(0);
+      if (video != null) {
+        if (play === "play"){
+          video.play();
+        } else {
+          video.pause();
+        }
+      }
+    }
+    if(player != undefined){
+      player.contentWindow.postMessage(JSON.stringify(command),"*");
+    }
+  }
+
+  $(".image_slick").on("beforeChange", function(e, slick) {
+    var currentSlide = $(slick.$slider).find(".slick-current");
+    playPauseVideo(currentSlide,"pause");
+  });
+
+  $(".image_slick").on("afterChange", function(e, slick) {
+    var currentSlide = $(slick.$slider).find(".slick-current");
+    playPauseVideo(currentSlide,"play");
+  });
+</script>
+<!-- start timer display JS / css -->
+<style>
+  div#timer{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 10px;
+  }
+  ._time.days, ._time.minutes, ._time.hours, ._time.seconds {
+    padding: 10px;
+    border: 1px solid black;
+    background: #fff;
+    max-width: 90px;
+    width: 100%;
+  }
+</style>
+<script>
+  // Set the date we're counting down to
+  //   set date example : Sep 11, 2021 15:37:25
+  var countDownDate = new Date("{{ product.metafields.timer_name.timer_key }}").getTime();
+  var now = new Date().getTime();
+  if(countDownDate != now ){
+    var x = setInterval(function() {
+      var now =  new Date().getTime();                           
+      var distance = countDownDate - now;
+      // Time calculations for days, hours, minutes and seconds
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      if(days < 10){
+        days = '0' + days;
+      }
+      if(hours < 10){
+        hours = '0' + hours;
+      }
+      if(minutes < 10){
+        minutes = '0' + minutes;
+      }
+      if(seconds < 10){
+        seconds = '0' + seconds;
+      }
+      $('#timer').html('<div class="_time days"><label class="desktop_only">Days</label><h3>'+ days +'</h3></div><div class="_time hours"><label class="desktop_only">Hours</label><h3>'+ hours +'</h3></div><div class="_time minutes"><label class="desktop_only">Minutes</label><h3>'+ minutes +'</h3></div><div class="_time seconds"><label class="desktop_only">Seconds</label><h3>'+ seconds +'</h3></div>');
+      if (distance <= 0) {
+        clearInterval(x);
+        $('#timer').html(" ");
+      }else{
+      }
+    }, 1000);
+  }
+</script>
+<!-- end timer display js /css -->

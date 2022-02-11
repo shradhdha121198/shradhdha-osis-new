@@ -1,0 +1,399 @@
+<section class="page-header dataBg main_img_p" data-bg-src="https://cdn.shopify.com/s/files/1/0427/3936/8087/files/shop-header.png?v=1598257201">
+  <div class="container">
+    <h2 class="h1 text-center color4">Shop</h2>
+  </div>
+</section>
+<section class="product-section">
+  <div class="container">
+    <div class="row">
+      <div class="product-gallery half">
+        <div class="image_slick">
+          {% for media in product.media %}
+          {% case media.media_type %}
+          {% when 'image' %}
+          <div class="image-slide">
+            <!-- <img src="{{ media | img_url:'master' }}" alt="{{ media.alt }}"> -->
+            <a class="image_show_{{ media.alt }} html5lightbox" data-fullscreenmode="true" data-group="set_{{ product.id }}" data-thumbnail="{{ media | product_img_url: '200x' }}" href="{{ media | product_img_url: 'master' }}">
+              <div class="fan-fav-img">
+                <img  loading="lazy" class="scroll-indicator" id="s0{{ forloop.index }}" src="{{ media | product_img_url: 'master' }}" alt="{{ media.alt | escape }}" />
+              </div>
+            </a>
+          </div>
+          {% when 'external_video' %}
+          <div class="image-slide youtube">
+            {{ media  | external_video_tag:  class: "youtube_video", id:"1_" }}
+          </div>
+          {% when 'video' %}
+          <div class="image-slide video">
+            {{ media | video_tag: controls: true , class: "video1" }}
+          </div>
+          {% when 'model' %}
+          <div class="image-slide">
+            {{ media | model_viewer_tag }}
+          </div>
+          {% else %}
+          <div class="image-slide">
+            {{ media | media_tag }}
+          </div>
+          {% endcase %}
+          {% endfor %}
+        </div>
+        <ul class="pro-ul product-img flexbox product_gallery">
+          {% for media in product.media %}
+          {% case media.media_type %}
+          {% when 'video' %}
+          <li class="sub-pro-img flexbox center">
+            {{ media | video_tag: controls: true , class: "video2"}}
+          </li>
+          {% else %}
+          <li class="sub-pro-img flexbox center">
+            <img  loading="lazy" src="{{ media | img_url:'350x350' }}" alt="{{ media.alt }}">
+          </li>
+          {% endcase %}
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="product-content half">
+        <div class="product-content-cover">
+          {% assign variant = product.selected_or_first_available_variant %}
+          <h1 class="h2 color6">{{ product.title }}</h1>
+          <div class="product-form" id="p{{ product.id }}">
+            {% form 'product', product, id: "oldID", class: "old-class" %}
+            
+            <div>SKU : {{ variant.sku }}</div>
+            
+            <div class="price-qty">
+              <h3 class="color6" id="price-field" class="price">{{ variant.price | money }}{% if variant.price < variant.compare_at_price %} <del>{{ variant.compare_at_price | money }}</del>{% endif %}</h3>
+              {% if product.compare_at_price > product.price %}
+              {% assign save_price = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price %}
+              <h3 class="discount_label"><span>You are save {{save_price}}%</span></h3>
+              {% endif %}
+              <div class="qty">
+                <a class="minus">-</a>
+                <input id="ins" type="text" name="quantity" value="1" min="1">
+                <a class="plus">+</a>
+              </div>
+            </div>
+            {% assign hide_default_title = false %}
+            {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
+            {% assign hide_default_title = true %}
+            {% endif %}
+            <div id="quantity position-r" {% if hide_default_title %}style="display: none;"{% endif %}>
+              <select id="product_select_{{product.id}}" name='id' class="select">
+                {% for variant in product.variants %}
+                <option value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money }}</option>
+                {% endfor %}
+              </select>
+              <div class="swatch_product" style="display: grid;">  
+                {% if product.available and product.variants.size > 1 %}
+                {% for option in product.options %}
+                {% include 'swatch' with option %}
+                {% endfor %}
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="other_color" style="display: flex;">
+              {% capture oc %}
+              {% for tag in product.tags %}
+              {% if tag contains '#' %}
+              {% assign p = tag | remove: '#' %}
+              {% assign pro = all_products[p] %}
+              <div class="otherColor" data-handle="{{ pro.handle }}">
+                <a>
+                  {% assign hasCI = false %}
+                  <img  loading="lazy" class="{% if pro.handle == product.handle %}active{% endif %}" src="{{ pro.featured_image | img_url : '50x50', crop: 'center' }}" alt="" />
+                </a>
+              </div>
+              {% assign hascolor = true %}
+              {% endif %}
+              {% endfor %}
+              {% endcapture %}
+              {% if hascolor %}{{ oc }}{% endif %}
+            </div>
+
+            <!--  start code =  During add to cart (product) with two material or product get free - show in mini cart and cart  -->
+            <div class="meta_new_image_fun">
+              {% assign size = product.metafields.meta_variant_image.meta_variant_image_key.size %}
+              <div class="meta_new_my_cl">
+                {% if size > 0 %}
+                <p>Cotton</p>
+                <div class="metafield_variant_img">
+                  {% for i in  (0..size) %}
+                  <input type="radio" name="properties[Selected Option 1]"  id="id_{{ i }}" value="{{product.metafields.meta_variant_image.meta_variant_image_key[i]}}" hidden="hidden">
+                  {% if product.metafields.meta_variant_image.meta_variant_image_key[i] != blank %}
+                  <div class="meta_image">
+                    <label for="id_{{ i }}">
+                      <img  loading="lazy" src="{{product.metafields.meta_variant_image.meta_variant_image_key[i]}}">
+                    </label>
+                  </div>
+                  {% endif %}
+                  {% endfor %}	
+                </div>
+                {% endif %}
+              </div>
+              <div class="print_msg_flex">
+                <div class="print_cotton_msg"></div>
+                <div class="put_image"></div>
+              </div>
+              {% assign size = product.metafields.meta_image_2.meta_img_2.size %}
+              <div class="meta_new_my_cl">
+                {% if size > 0 %}
+                <p>Ployster</p>
+                <div class="metafield_variant_img">
+                  {% for i in  (0..size) %}
+                  <input type="radio" id="sec_id_{{ i }}" name="properties[Selected Option 2]" value="{{product.metafields.meta_image_2.meta_img_2[i]}}" hidden="hidden">
+                  {% if product.metafields.meta_image_2.meta_img_2[i] != blank %}
+                  <div class="meta_second_image">
+                    <label for="sec_id_{{ i }}">
+                      <img  loading="lazy" src="{{product.metafields.meta_image_2.meta_img_2[i]}}">
+                    </label>
+                  </div>
+                  {% endif %}
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+              <div class="print_msg_flex">
+                <div class="print_cotton_msg_new"></div>
+                <div class="put_image_sec"></div>
+              </div>
+            </div>
+            <!--  end code =  During add to cart (product) with two material or product get free - show in mini cart and cart  -->
+
+            
+            <div class="add-to-cart-button button6">
+              <input type="submit" value="ADD TO CART" id="addtocart"  class="btn" style="width: 100%;">
+            </div>                  
+            <a href="" class=" static_checkout" data-action="add-to-cart">buy it now</a>   
+
+            {% endform %}
+          </div>
+          <div class="product-description">
+            <h5>DESCRIPTION</h5>
+            <div class="desc">
+              <p>{{ product.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% render 'linked-option' %}
+<style>
+  .swatch{
+    margin: 0;
+  }
+  .color6, .discount_label{
+    font-size: 20px;
+  }
+  .title_name{
+    font-size: 30px;
+  }
+  .discount_label{
+    padding-left: 5px;
+  }
+  .color6 .money{
+    padding-right: 10px;
+  }
+  .color6 del{
+    color: #e4a756;
+  }
+  .plus{
+    padding: 8px;
+  }
+  .minus{
+    padding: 8px;
+  }
+  .main_img_p{
+    background-image: url(https://cdn.shopify.com/s/files/1/0427/3936/8087/files/shop-header.png?v=1598257201");
+  }
+  video.video2{
+    width: 224px;
+  }
+  .color_desc1{
+    font-weight: bold;
+  }
+  .product-description h5:before{
+    content: '-';
+    font-size: 20px;
+    position: absolute;
+    right: 20px;
+    top: 0;
+    bottom: 0;
+    margin-top: auto;
+    margin-bottom: auto;
+    line-height: 1.3;
+    transition: all ease-in-out 0.3s;
+  }
+  .disabled{
+    cursor: no-drop !important;
+  }
+  .discount_label span{
+    color: #03a203;
+  }
+  .add_filed{
+    padding: 5px;
+    display: flex;
+    align-items: center;
+  }
+  .add_filed .input_name{
+    border: 2px solid #CBB682; 
+    color: #CBB682;
+    font-size: 20px;
+  }
+  .select_input{
+    border: 2px solid #CBB682; 
+    color: #CBB682;
+    font-size: 20px;
+    font-family: inherit;
+  }
+  .add_filed label{
+    padding-right: 10px;
+  }
+  .static_checkout{
+    border: 0;
+    font-weight: "DIN-Bold";
+    border-radius: 0;
+    text-align: center;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1.3;
+    letter-spacing: 1;
+    padding: 10px 20px;
+    text-transform: uppercase;
+    min-width: 208px;
+    color: #fffcf8;
+    letter-spacing: 1px;
+    background: #204B6E;
+    color: #ffffff;
+    width: 100%;
+    font-family: "DIN-Bold";
+    font-size: 20px;
+    letter-spacing: 1px;
+    margin-top: 5px;
+  }
+  .static_checkout:hover{
+    background: #7CA7AD;
+    color: #ffffff;
+  }
+  .selector-wrapper{
+    display: none !important;
+  }
+</style>
+<script>
+  var selectCallback = function(variant, selector) {
+     var val = selector.product.id;
+     var price='#p'+val+' .price';
+     var btn =  '#p'+val+' .add_cart_btn';
+    
+    var i,image_change=0;      
+    for(i=0;i<selector.selectors.length;i++){
+      if(selector.selectors[i].name == 'Color'){
+        image_change=1;
+      }    
+    }
+    if(image_change==1){
+      var alt =""; 
+      if(variant.featured_image){
+        alt=variant.featured_image.alt;
+      }
+      else{
+        alt= variant.option1;          
+      }
+      var images_zoom = '<div class="image_slick">', images_thumb = '<div class="product_gallery">';
+      {% for image in product.images %}
+      var img_alt="{{ image.alt }}";
+      if(img_alt == alt){
+        images_zoom+='<div class="fan-fav-img">\
+          <img loading="lazy" src="{{ image | img_url: 'master' }}" alt="{{ image.alt }}">\
+            </div>';
+            images_thumb+='<div class="sub-pro-img">\
+          <img loading="lazy" src="{{ image | img_url:'master' }}" alt="{{ image.alt }}">\
+            </div>';
+      }
+      {% endfor %}
+      $('.product-gallery').html(images_zoom+"</div>"+images_thumb+"</div>");
+      slick_slider();
+    }     
+    function slick_slider(){
+      $(".image_slick").slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        fade: true,
+        asNavFor: '.product_gallery'
+      });
+      $(".product_gallery").slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '.image_slick',
+        centerMode: true,
+        focusOnSelect: false,
+        responsive: [
+          {
+            breakpoint: 768,
+            settings:{
+              slidesToShow: 1,
+              slidesToScroll: 1
+            }
+          }
+        ]	
+      });
+    }
+      
+  	var form = jQuery('#' + selector.domIdPrefix).closest('form');
+    if (variant) {
+      for (var i=0,length=variant.options.length; i<length; i++) {
+        var radioButton = form.find('.swatch[data-option-index="' + i + '"] :radio[value="' + variant.options[i] +'"]');
+      }
+    }
+    
+    /* start code for "link option with pick an option" */
+    var f = 0;
+    if(f == 0){
+      form.find('.swatch').each(function(index,val){
+        if($(val).find('input[type="radio"]:checked').length == 0){
+          $(btn).text("select "+$(val).data("value")+" option");
+          $(btn).addClass('disabled').attr('disabled','disabled').fadeTo(1,0.3); 
+          f+= 1;
+          return false;
+        }
+      });
+    }   
+    if(f > 0){
+      return false;
+    } 
+    else {
+      if (variant) {
+        if (variant.available) {
+          // Selected a valid variant that is available.
+          $(btn).removeClass('disabled').removeAttr('disabled').text('Add to Cart').fadeTo(200,1);
+        } else {
+          // Variant is sold out.
+          $(btn).val('Sold Out').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+        }
+        // Whether the variant is in stock or not, we can update the price and compare at price.
+        if ( variant.compare_at_price > variant.price ) {
+          $(price).html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, "") +'</span>'+'&nbsp;<s class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, "")+ '</s>');
+        } else {
+          $(price).html('<span class="product-price">'+ Shopify.formatMoney(variant.price, "") + '</span>' );
+        }
+      } else {
+        // variant doesn't exist.
+        $(btn).val('Unavailable').addClass('disabled').attr('disabled', 'disabled').fadeTo(200,0.5);
+      }
+   }
+   /* end code for "link option with pick an option" */ 
+    
+  }
+  
+  // initialize multi selector for product
+  jQuery(function($) {
+    new Shopify.OptionSelectors("product_select_{{product.id}}", { product: {{ product | json }} , onVariantSelected: selectCallback, enableHistoryState: false });
+  });
+
+</script>
